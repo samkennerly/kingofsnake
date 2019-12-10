@@ -13,7 +13,7 @@ eightysix [TAG]         Delete $PROJECT:TAG containers, image, and leftovers
 freeze [TAG]            Update requirements.txt and rebuild $PROJECT:TAG
 menu                    Show all available Docker objects
 runit [TAG] [CMD]       Run CMD in an interactive $PROJECT:TAG container
-serve [TAG] [CMD]       runit [TAG] [CMD] with $CONTEXT mounted as /context
+serve [TAG]             Serve Jupyter in a $PROJECT:TAG container with mounted folders
 
 DEFAULTS
 TAG 'latest'
@@ -58,11 +58,13 @@ runit() {
   docker run --rm --interactive --tty "$PROJECT:${1:-latest}" "${@:2}"
 }
 serve() {
-  docker run --rm --interactive --tty \
+  docker run --rm  --publish "127.0.0.1:8888:8888" --user 'kos' \
+    --volume "$HOME/.ipython:/home/kos/.ipython" \
+    --volume "$HOME/.jupyter:/home/kos/.jupyter" \
     --hostname "${PROJECT}" \
     --volume "${CONTEXT}:/context:delegated" \
     "$PROJECT:${1:-latest}" \
-    "${@:2}"
+    jupyter notebook --no-browser --ip=0.0.0.0 --port=8888
 }
 
 if [ $# -eq 0 ]; then echo "$HELPMSG"; else "$@"; fi
