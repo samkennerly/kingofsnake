@@ -1,9 +1,16 @@
-# Dotfiles and dotfolders
-**/.*
+# Apple debris
+.DS_Store*
+.Spotlight-*
+.Trashes
+.fseventsd
+Thumbs.db
+
+# Big data
+data/*
+!data/examples/*
 
 # Caches
 **/__pycache__
 
-# Variables
-var/*
-!var/small.txt
+# Dotfiles and dotfolders
+**/.*

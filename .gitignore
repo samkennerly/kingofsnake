@@ -1,7 +1,3 @@
-# Variables
-/var/*
-!/var/small.txt
-
 # Apple debris
 .DS_Store*
 .Spotlight-*
@@ -9,11 +5,11 @@
 .fseventsd
 Thumbs.db
 
-# Jupyter secrets
-.ipynb_checkpoints/
-jupyter_notebook_config.*
+# Big data
+/data/*
+!/data/examples/*
 
-# Python caches
+# Caches
 *.egg
 *.egg-info
 *.py[cod]
@@ -23,3 +19,7 @@ jupyter_notebook_config.*
 .tox/
 .venv/
 __pycache__/
+
+# Jupyter secrets
+.ipynb_checkpoints/
+jupyter_notebook_config.*
