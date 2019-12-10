@@ -1,0 +1,9 @@
+# Dotfiles and dotfolders
+**/.*
+
+# Caches
+**/__pycache__
+
+# Variables
+var/*
+!var/small.txt

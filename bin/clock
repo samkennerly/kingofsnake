@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""
+Print log messages once per second until the program crashes.
+"""
+from random import randrange
+from time import sleep
+
+from pydiner import achtung, echo
+
+HELLO = "Groetjes, mijnheer van Rossum."
+ERROR = "De enige winnende zet is niet om te spelen."
+
+while True:
+    echo(HELLO) if randrange(0, 8) else achtung(ERROR)
+    sleep(1)

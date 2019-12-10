@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+"""
+Print (or save) derangements of a character string.
+Run this script with the --help option for details.
+"""
+
+from argparse import ArgumentParser
+from datetime import datetime
+from functools import partial
+from itertools import permutations
+from pathlib import Path
+from sys import stdout as STDOUT
+
+from pydiner import REPO, achtung, batcher, echo, fullpath, getparams
+
+NBATCH = 1_000
+OUTPATH = None
+PROFILE = None
+QUIET = False
+WORD = ""
+
+
+def argparams():
+    """ dict: Parameters parsed from command-line inputs. """
+    parsed = ArgumentParser()
+    parsed.description = """Find all derangements of characters in WORD."""
+    arg = parsed.add_argument
+    arg("word", nargs="?", type=str, help="scramble this string")
+    arg("-n", "--nbatch", type=int, help="maximum batch size")
+    arg("-o", "--outpath", type=Path, help="save output to this file")
+    arg("-p", "--profile", type=str, help="use pre-configured defaults")
+    arg("-q", "--quiet", action="store_true", help="no log messages to STDOUT")
+    parsed = vars(parsed.parse_args())
+
+    return {k: v for k, v in parsed.items() if v is not None}
+
+
+def batchwrite(lines, path, nbatch=1):
+    """ int: Write lines of text to file in batches. Return line count. """
+    joined = "\n".join
+    with open(path, "w") as file:
+        write = partial(print, file=file)
+        nlines = sum(write(joined(x)) or len(x) for x in batcher(lines, nbatch))
+
+    return nlines
+
+
+def countprint(lines):
+    """ int: Print lines of text to STDOUT. Return line count. """
+    return sum(1 for _ in map(print, lines))
+
+
+def derangements(word):
+    """
+    Iterator[str]: Permutations of word with no char in its original position.
+    Outputs are unique if and only if word has no duplicated letters.
+    Example: eggs -> ('gesg', 'gseg', 'gesg', 'gseg')
+    """
+    perms = map("".join, permutations(sorted(word)))
+    for perm in perms:
+        if not any(x == y for x, y in zip(perm, word)):
+            yield perm
+
+
+def expectedsize(chars):
+    """ int: Rough estimate of output size. """
+    return round(0.4 * factorial(len(chars)))
+
+
+def factorial(n):
+    """ int: n! if n is a non-negative integer, else probably wrong. """
+    return n * factorial(n - 1) if (n > 1) else 1
+
+
+def main(nbatch=NBATCH, outpath=OUTPATH, quiet=QUIET, word=WORD):
+    outpath = fullpath(outpath) if outpath else None
+
+    if not quiet:
+        echo(f"Write derangements of '{word}' to {outpath or 'STDOUT'}")
+
+    esize = expectedsize(word)
+    if not quiet:
+        echo(f"{esize} expected")
+    if esize > 1e7:
+        achtung("This might take a while...")
+
+    tstart = datetime.now()
+    lines = derangements(word)
+    nlines = batchwrite(lines, outpath, nbatch) if outpath else countprint(lines)
+    tstop = datetime.now()
+
+    if not quiet:
+        echo(f"{nlines} found")
+        echo(f"{tstop - tstart} time elapsed")
+
+
+if __name__ == "__main__":
+    params = argparams()
+    profile = params.pop("profile", PROFILE)
+    if profile:
+        params = getparams(profile, **params)
+
+    main(**params)

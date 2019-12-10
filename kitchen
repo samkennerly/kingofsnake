@@ -1,0 +1,68 @@
+#!/usr/bin/env sh
+
+CONTEXT=$PWD
+PROJECT=$(basename "$PWD")
+HELPMSG=$(cat <<-END
+Build a Docker image and run disposable containers.
+
+COMMANDS
+bake [TAG]              Build $PROJECT:TAG image from $CONTEXT
+clean                   Delete all $PROJECT containers and Docker leftovers
+debug TAG SCRIPT [ARGS] Debug Python SCRIPT in a $PROJECT:TAG container
+eightysix [TAG]         Delete $PROJECT:TAG containers, image, and leftovers
+freeze [TAG]            Update requirements.txt and rebuild $PROJECT:TAG
+menu                    Show all available Docker objects
+runit [TAG] [CMD]       Run CMD in an interactive $PROJECT:TAG container
+serve [TAG] [CMD]       runit [TAG] [CMD] with $CONTEXT mounted as /context
+
+DEFAULTS
+TAG 'latest'
+CMD See $CONTEXT/Dockerfile
+
+EXAMPLES
+./kitchen bake monty
+./kitchen freeze monty
+./kitchen serve monty
+./kitchen serve monty python -m test
+END
+)
+
+bake() {
+  touch requirements.txt &&
+  docker build --tag "$PROJECT:${1:-latest}" "$CONTEXT" &&
+  docker image prune --force
+}
+clean() {
+  docker ps --quiet --filter ancestor="$PROJECT" | xargs docker rm --force &&
+  docker system prune --force
+}
+debug() {
+  serve "$1" python -m pdb "${@:2}"
+}
+eightysix() {
+  clean &&
+  docker rmi --force "$PROJECT:${1:-latest}" &&
+  docker image prune --force
+}
+freeze() {
+  docker run --rm "$PROJECT:${1:-latest}" pip freeze > requirements.txt &&
+  bake "$1"
+}
+menu() {
+  echo "---- Images ----" && docker image ls | sort
+  echo "---- Volumes ----" && docker volume ls | sort
+  echo "---- Networks ----" && docker network ls
+  echo "---- Containers ----" && docker ps --all
+}
+runit() {
+  docker run --rm --interactive --tty "$PROJECT:${1:-latest}" "${@:2}"
+}
+serve() {
+  docker run --rm --interactive --tty \
+    --hostname "${PROJECT}" \
+    --volume "${CONTEXT}:/context:delegated" \
+    "$PROJECT:${1:-latest}" \
+    "${@:2}"
+}
+
+if [ $# -eq 0 ]; then echo "$HELPMSG"; else "$@"; fi
