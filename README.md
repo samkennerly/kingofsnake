@@ -43,7 +43,7 @@ The `kitchen` script defines [shell functions] for common Docker commands.
 ### bake an image
 
 1. Edit the `Dockerfile` to choose a Python version.
-1. Edit `requirements.txt` to choose Python packages.
+1. Replace `requirements.txt` with your project's requirements.
 1. Run `./kitchen bake` to build a `kingofsnake:latest` image.
 1. Run `./kitchen freeze` to update `requirements.txt` and rebuild.
 
