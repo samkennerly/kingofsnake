@@ -5,11 +5,17 @@ from time import sleep
 
 from requests import get as getrequest
 
+from utils import DATADIR, alert, read_json, save_json
+
+BASE = 'https://ergast.com/api/f1'
+FOLDER = DATADIR / 'ergast.com/api/f1'
+
 class Ergast:
+    """
+    UNDER CONSTRUCTION
+    """
 
-    BASE = 'https://ergast.com/api/f1'
-
-    def __init__(self, folder='data/ergast.com/api/f1', limit=10, retry=4, timeout=1):
+    def __init__(self, folder=FOLDER, limit=5, retry=4, timeout=1):
         self.folder = Path(folder)
         self.limit = int(limit)
         self.retry = int(retry)
@@ -25,11 +31,11 @@ class Ergast:
 
     def pages(self, query):
         """ Iterator[Dict]: Raw pages returned by query. """
-        limit, raw = self.limit, self.raw
+        limit, response = self.limit, self.response
 
         offset, total = 0, 1
         while offset < total:
-            page = raw(query, limit=limit, offset=offset)
+            page = response(query, limit=limit, offset=offset)
             total = int(page['MRData']['total'])
             offset += limit
             yield page
@@ -38,7 +44,7 @@ class Ergast:
     def queries(cls):
         raise NotImplementedError
 
-    def raw(self, query, **kwargs):
+    def response(self, query, **kwargs):
         """ dict or None: JSON-decoded response to query. """
         retry, timeout, url = self.retry, self.timeout, self.url
 
@@ -47,7 +53,7 @@ class Ergast:
             raw = getrequest(url, timeout=timeout)
             status = raw.status_code
             if status != 200:
-                print(f"{status} ({i} retries left) {url}")
+                alert(f"{status} ({i} retries left) {url}")
                 sleep(timeout)
                 continue
 
@@ -57,24 +63,15 @@ class Ergast:
         """ None: Save query response pages as JSON files. """
         folder, pages = self.folder, self.pages
 
-        folder = folder / str(query)
-        if not folder.exists():
-            print("mkdir", folder)
-            folder.mkdir(parents=True)
-
-        for i, page in enumerate(pages(*args)):
-            path = (folder / str(i)).with_suffix('.json')
-            with open(path, "w") as file:
-                print("save", path)
-                jsondump(page, file)
+        for i, page in enumerate(pages(query)):
+            save_json(page, folder / str(i))
 
     @classmethod
     def url(cls, query, **kwargs):
         """ str: Target URL for GET requests. """
-        BASE = cls.BASE
         params = "&".join( f"{k}={v}" for k,v in kwargs.items() )
 
-        return f"{cls.BASE}/{query}.json?{params}"
+        return f"{BASE}/{query}.json?{params}"
 
     # Specific queries
 
