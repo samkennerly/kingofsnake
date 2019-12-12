@@ -1,27 +1,48 @@
 from collections import namedtuple
 from itertools import chain
-from json import dump, load
+from json import dump, load, loads
 from operator import itemgetter
 from pathlib import Path
 from sys import stderr as STDERR
 from time import sleep
-
-from requests import get as getrequest
+from urllib.request import urlopen
 
 BASE = 'https://ergast.com/api/f1'
-LIMIT = 1000
+LIMIT = 100
 RETRIES = 4
 TIMEOUT = 1
+
+def tupled(rows, name, *cols):
+    """ Iterator[namedtuple]: Rows extracted from dictionaries. """
+    Row = namedtuple(name, cols, defaults=[ None for _ in cols ])
+
+    return ( Row(**x) for x in rows )
+
+def unpacked(rows, *keys):
+    """ Iterator[dict]: Dictionaries extracted from query replies. """
+    for key in keys:
+        rows = map(itemgetter(key), rows)
+
+    return chain.from_iterable(rows)
+
+def warn(*args, file=STDERR):
+    """ None: Print error message to standard error stream. """
+    print("ERROR", __name__, *args, file=file)
 
 class ErgastF1:
     """
     UNDER CONSTRUCTION
     """
 
-    def __init__(self, folder=None, retries=RETRIES, timeout=TIMEOUT):
+    def __init__(self, folder=None, limit=LIMIT, retries=RETRIES, timeout=TIMEOUT):
         self.folder = Path(folder) if folder else None
+        self.limit = int(limit)
         self.retries = int(retries)
         self.timeout = float(timeout)
+
+    def __call__(self, *args):
+        """ Iterator[dict]: Paginated replies. Set folder=None to disable cache. """
+        return self.cached(*args) if self.folder else self.batches(*args)
 
     def __repr__(self):
         name = type(self).__name__
@@ -29,156 +50,144 @@ class ErgastF1:
 
         return f"{name}({params})"
 
-    @classmethod
-    def alert(cls, *args, file=STDERR):
-        """ None: Print error message. """
-        print("ERROR", cls.__name__, *args, file=file)
+    # Tables
 
-    def get(self, *args):
-        """ Iterator[Dict]: Replies to query. Uses cache if folder is set. """
-        return self.read(*args) if self.folder else self.pages(*args)
-
-    # Row generators
-
+    @property
     def circuits(self):
-        """ Iterator[namedtuple]: Tacks from all years. """
-        get, tupled, unpacked = self.get, self.tupled, self.unpacked
+        """ List[namedtuple]: All tracks. """
+        rows = self('circuits')
 
         keys = 'MRData CircuitTable Circuits'.split()
         cols = 'circuitId circuitName country lat long locality url'.split()
-        rows = unpacked(get('circuits'), *keys)
+        rows = unpacked(rows, *keys)
         rows = ( {**x, **x.pop('Location')} for x in rows )
+        rows = tupled(rows, 'Circuit', *cols)
 
-        return tupled(rows, 'Circuit', *cols)
+        return list(rows)
 
+    @property
     def constructors(self):
-        """ Iterator[namedtuple]: Teams from all years. """
-        get, tupled, unpacked = self.get, self.tupled, self.unpacked
+        """ List[namedtuple]: All constructors. """
+        rows = self('constructors')
 
         keys = 'MRData ConstructorTable Constructors'.split()
         cols = 'constructorId name nationality url'.split()
-        rows = unpacked(get('constructors'), *keys)
+        rows = unpacked(rows, *keys)
+        rows = tupled(rows, 'Constructor', *cols)
 
-        return tupled(rows, 'Constructor', *cols)
+        return list(rows)
 
+    @property
     def drivers(self):
-        """ Iterator[namedtuple]: Drivers from all years. """
-        get, tupled, unpacked = self.get, self.tupled, self.unpacked
+        """ List[namedtuple]: All drivers. """
+        rows = self('drivers')
 
         keys = 'MRData DriverTable Drivers'.split()
         cols = 'driverId code dateOfBirth familyName givenName nationality'.split()
         cols += 'permanentNumber url'.split()
-        rows = unpacked(get('drivers'), *keys)
+        rows = unpacked(rows, *keys)
+        rows = tupled(rows, 'Driver', *cols)
 
-        return tupled(rows, 'Driver', *cols)
+        return list(rows)
 
-    def races(self, year='current'):
-        """ Iterator[namedtuple]: Races from selected year. """
-        get, tupled, unpacked = self.get, self.tupled, self.unpacked
+    @property
+    def seasons(self):
+        """ List[namedtuple]: All seasons. """
+        rows = self('seasons')
 
-        keys = 'MRData RaceTable Races'.split()
-        cols = 'circuitId date raceName round season time url'.split()
-        rows = unpacked(get(year), *keys)
-        rows = ( (x, x.pop('Circuit').pop('circuitId')) for x in rows )
-        rows = ( {**x, **{'circuitId': y}} for x, y in rows )
+        keys = 'MRData SeasonTable Seasons'.split()
+        cols = 'season url'.split()
+        rows = unpacked(rows, *keys)
+        rows = tupled(rows, 'Season', *cols)
 
-        return tupled(rows, 'Race', *cols)
+        return list(rows)
 
-    # Helpers
+    @property
+    def status(self):
+        """ List[namedtuple]: Status codes for race results. """
+        rows = self('status')
 
-    def pages(self, *args, limit=LIMIT):
-        """ Iterator[Dict]: Paged replies to query. """
-        queried = self.queried
+        keys = 'MRData StatusTable Status'.split()
+        cols = 'statusId count status'.split()
+        rows = unpacked(rows, *keys)
+        rows = tupled(rows, 'Status', *cols)
+
+        return list(rows)
+
+    # Manual query methods
+
+    def batches(self, *args):
+        """ Iterator[dict]: Query replies with automatic pagination. """
+        limit, reply = self.limit, self.reply
 
         offset, total = 0, 1
         while offset < total:
-            page = queried(*args, limit=limit, offset=offset)
+            page = reply(*args, offset=offset)
             total = int(page['MRData']['total'])
             offset += limit
             yield page
 
-    def queried(self, *args, **kwargs):
-        """ dict: JSON reply to query. Retries automatically. """
-        alert, retries, timeout = self.alert, self.retries, self.timeout
+    def cached(self, *args):
+        """ Iterator[dict]: Cached pages. Downloads pages if none exist. """
+        download, querypath = self.download, self.querypath
 
-        params = "&".join( f"{k}={v}" for k, v in kwargs.items() )
-        query = "/".join(map(str, args))
-        url = f"{BASE}/{query}.json?{params}"
+        folder = querypath(*args)
+        if not any(folder.glob('*.json')):
+            download(*args)
 
-        for trials in reversed(range(retries)):
-            try:
-                print(f"GET {url}")
-                reply = getrequest(url, timeout=timeout)
-                reply.raise_for_status()
-                reply = reply.json()
-            except Exception as err:
-                if trials:
-                    alert(f"Try again in {timeout} seconds. {err}")
-                    sleep(timeout)
-                    timeout *= 2
-                else:
-                    alert(f"Gave up after {retries} retries.")
-                    raise err
-
-            return reply
-
-    def read(self, *args):
-        """ Iterator[dict]: Saved replies. Gets missing replies automatically. """
-        folder, save = self.folder, self.save
-
-        subdir = folder.joinpath(*args)
-        if not any(subdir.glob('*.json')):
-            save(*args)
-
-        for path in sorted(subdir.glob('*.json')):
+        for path in sorted(folder.glob('*.json')):
             with open(path) as file:
                 yield load(file)
 
-    def save(self, *args, limit=LIMIT, **kwargs):
-        """ None: Get query replies and save to JSON files. """
-        folder, pages = self.folder, self.pages
+    def download(self, *args):
+        """ None: Delete any old pages. Get and save new pages. """
+        batches, erase, querypath = self.batches, self.erase, self.querypath
 
-        kwargs.setdefault("allow_nan", False)
-        kwargs.setdefault("check_circular", False)
-        kwargs.setdefault("indent", 2)
-        if not folder:
-            raise ValueError(f"cache folder is {folder}")
+        folder = querypath(*args)
+        if folder.exists():
+            erase(*args)
+        else:
+            print(f"mkdir {folder}")
+            folder.mkdir(parents=True)
 
-        subdir = folder.joinpath(*map(str, args))
-        if not subdir.exists():
-            print("mkdir", subdir)
-            subdir.mkdir(parents=True)
-        for path in subdir.glob('*.json'):
-            print("rm", path)
+        for i, data in enumerate(batches(*args)):
+            path = (folder / str(i)).with_suffix('.json')
+            with open(path, "w") as file:
+                print(f"save {path}")
+                dump(data, file, allow_nan=False, indent=2)
+
+    def erase(self, *args):
+        """ None: Delete any cached pages. """
+        querypath = self.querypath
+
+        for path in querypath(*args).glob('*.json'):
+            print(f"rm {path}")
             path.unlink()
 
-        for i, page in enumerate(pages(*args, limit=limit)):
-            path = (subdir / str(i)).with_suffix('.json')
-            with open(path, "w") as file:
-                print("save", path)
-                dump(page, file, **kwargs)
+    # Helpers
 
-    @staticmethod
-    def tupled(rows, name, *cols):
-        """ Iterator[namedtuple]: Rows with selected column names. """
-        Row = namedtuple(name, cols, defaults=[ None for _ in cols ])
+    def querypath(self, *args):
+        """ Path: Path to cache folder. """
+        return self.folder.joinpath(*map(str, args))
 
-        return ( Row(**x) for x in rows )
+    def reply(self, *args, offset=0):
+        """ dict: Data extracted from query reply. """
+        limit, retries, timeout = self.limit, self.retries, self.timeout
 
-    @staticmethod
-    def unpacked(rows, *keys):
-        """ Iterator[dict]: Row dicts extracted from query replies. """
-        for key in keys:
-            rows = map(itemgetter(key), rows)
+        path = "/".join(map(str, args)) + '.json'
+        url = f"{BASE}/{path}?limit={limit}&offset={offset}"
+        print(f"GET {url}")
 
-        return chain.from_iterable(rows)
+        for itry in reversed(range(1+retries)):
+            try:
+                with urlopen(url, timeout=timeout) as file:
+                    return loads(file.read())
 
-    def years(self):
-        """ Iterator[int]: Years for which queries are available. """
-        get, unpacked = self.get, self.unpacked
-
-        keys = 'MRData SeasonTable Seasons'.split()
-        vals = unpacked(get('seasons'), *keys)
-        vals = map(itemgetter('season'), vals)
-
-        return map(int, vals)
+            except Exception as err:
+                if itry:
+                    warn(f"Retry in {timeout} seconds because {err}")
+                    sleep(timeout)
+                    timeout *= 2
+                else:
+                    warn(f"Gave up after {retries} retries.")
+                    raise err
