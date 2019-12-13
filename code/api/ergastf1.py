@@ -1,3 +1,6 @@
+"""
+ErgastF1 class and utility functions.
+"""
 from collections import namedtuple
 from itertools import chain
 from json import dump, load, loads
@@ -9,8 +12,8 @@ from urllib.request import urlopen
 
 BASE = 'https://ergast.com/api/f1'
 LIMIT = 100
-RETRIES = 4
-TIMEOUT = 1
+RETRIES = 2
+TIMEOUT = 8
 
 def tupled(rows, name, *cols):
     """ Iterator[namedtuple]: Rows extracted from dictionaries. """
@@ -31,7 +34,35 @@ def warn(*args, file=STDERR):
 
 class ErgastF1:
     """
-    UNDER CONSTRUCTION
+    Get Formula 1 data from the ergast.com API.
+
+    No external dependencies. Tested with Python 3.7.5.
+    Caches replies to avoid requesting the same data repeatedly.
+    Retries failed queries, but slows down to reduce server load.
+
+    Input a Path or string to choose a cache folder.
+    (Default is None with cache disabled.)
+
+    >>> api = ErgastF1('path/to/cache/folder')
+
+    Call with query parameters to generate paged replies.
+
+    >>> pages = api(1990, 6, 'pitstops')
+    >>> next(pages)
+
+    Erase any cached results for a query.
+
+    >>> api.erase(1990, 6, 'pitstops')
+
+    Some common queries return a pre-formatted list of namedtuples.
+
+    >>> api.circuits
+    >>> api.constructors
+    >>> api.drivers
+    >>> api.seasons
+    >>> api.status
+
+    For big queries, consider downloading a database image: http://ergast.com/mrd/db/
     """
 
     def __init__(self, folder=None, limit=LIMIT, retries=RETRIES, timeout=TIMEOUT):
@@ -117,7 +148,7 @@ class ErgastF1:
     # Manual query methods
 
     def batches(self, *args):
-        """ Iterator[dict]: Query replies with automatic pagination. """
+        """ Iterator[dict]: Replies with automatic pagination. """
         limit, reply = self.limit, self.reply
 
         offset, total = 0, 1
@@ -191,3 +222,20 @@ class ErgastF1:
                 else:
                     warn(f"Gave up after {retries} retries.")
                     raise err
+
+
+"""
+Copyright © 2019 Sam Kennerly
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
