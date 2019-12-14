@@ -1,15 +1,15 @@
 """
-Extract, Transform, and/or Load data.
+Extract, transform, and load raw data.
 """
-from pathlib import Path
-
 from pandas import DataFrame
 
 from .ergast_tables import ErgastTables
 
-def show(data, n=5):
-    """ None: Show DataFrame size and schema. """
-    print(f"{len(data)} rows")
-    print(data.dtypes, "", "nulls", data.isnull().sum(), sep="\n")
+def afew(data, n=5):
+    """ DataFrame: Print DataFrame metadata and return a few rows. """
+    schema = DataFrame()
+    schema['dtype'] = data.dtypes
+    schema['nulls'] = data.isnull().sum()
+    print(f"{len(data)} rows", schema, sep="\n")
 
-    return data.head(n)
+    return data.sample(n)
