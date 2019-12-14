@@ -10,8 +10,9 @@ from pandas import read_csv, to_timedelta
 def to_seconds(s):
     """ Series[float64]: Converted Series of minute:seconds.fraction strings. """
     s = s.str.partition(":")
+    s = s[0].astype(float) + s[2].astype(float)
 
-    return 60 * s[0].astype(float) + s[2].astype(float)
+    return 60 * s
 
 
 class ErgastF1:
@@ -48,6 +49,7 @@ class ErgastF1:
         """ DataFrame: Read CSV file inside ZIP file. """
         path = self.path
         kwargs.setdefault("header", None)
+        kwargs.setdefault("index_col", "id")
         kwargs.setdefault("na_values", ["\\N"])
         name = Path(name).with_suffix(".csv").name
 
@@ -55,7 +57,7 @@ class ErgastF1:
             with zed.open(name) as file:
                 data = read_csv(file, **kwargs)
 
-        return data.rename_axis(None).sort_index(axis=1)
+        return data.rename_axis(None)
 
     @property
     def names(self):
@@ -64,7 +66,7 @@ class ErgastF1:
         with ZipFile(path) as zf:
             return zf.namelist()
 
-    # Series
+    # Original Series
 
     @property
     def seasons(self):
@@ -81,7 +83,7 @@ class ErgastF1:
 
         return get("status.csv", **kw).pop("status")
 
-    # DataFrames
+    # Original DataFrames
 
     @property
     def circuits(self):
@@ -199,6 +201,9 @@ class ErgastF1:
         data = get("constructor_standings.csv", **kw)
 
         return data
+
+    # Derived tables
+
 
 
 """
