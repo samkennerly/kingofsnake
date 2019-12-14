@@ -10,16 +10,18 @@ from sys import stderr as STDERR
 from time import sleep
 from urllib.request import urlopen
 
-BASE = 'https://ergast.com/api'
+BASE = "https://ergast.com/api"
 LIMIT = 100
 RETRIES = 2
 TIMEOUT = 8
 
+
 def tupled(rows, name, *cols):
     """ Iterator[namedtuple]: Rows extracted from dictionaries. """
-    Row = namedtuple(name, cols, defaults=[ None for _ in cols ])
+    Row = namedtuple(name, cols, defaults=[None for _ in cols])
 
-    return ( Row(**x) for x in rows )
+    return (Row(**x) for x in rows)
+
 
 def unpacked(rows, *keys):
     """ Iterator[dict]: Dictionaries extracted from query replies. """
@@ -28,9 +30,11 @@ def unpacked(rows, *keys):
 
     return chain.from_iterable(rows)
 
+
 def warn(*args, file=STDERR):
     """ None: Print error message to standard error stream. """
     print("ERROR", __name__, *args, file=file)
+
 
 class ErgastAPI:
     """
@@ -78,7 +82,7 @@ class ErgastAPI:
 
     def __repr__(self):
         name = type(self).__name__
-        params = ", ".join( f"{k}={v}" for k,v in vars(self).items() )
+        params = ", ".join(f"{k}={v}" for k, v in vars(self).items())
 
         return f"{name}({params})"
 
@@ -87,57 +91,57 @@ class ErgastAPI:
     @property
     def f1circuits(self):
         """ List[namedtuple]: All tracks. """
-        rows = self('f1', 'circuits')
-        keys = 'MRData CircuitTable Circuits'.split()
-        cols = 'circuitId circuitName country lat long locality url'.split()
+        rows = self("f1", "circuits")
+        keys = "MRData CircuitTable Circuits".split()
+        cols = "circuitId circuitName country lat long locality url".split()
         rows = unpacked(rows, *keys)
-        rows = ( {**x, **x.pop('Location')} for x in rows )
-        rows = tupled(rows, 'Circuit', *cols)
+        rows = ({**x, **x.pop("Location")} for x in rows)
+        rows = tupled(rows, "Circuit", *cols)
 
         return list(rows)
 
     @property
     def f1constructors(self):
         """ List[namedtuple]: All constructors. """
-        rows = self('f1', 'constructors')
-        keys = 'MRData ConstructorTable Constructors'.split()
-        cols = 'constructorId name nationality url'.split()
+        rows = self("f1", "constructors")
+        keys = "MRData ConstructorTable Constructors".split()
+        cols = "constructorId name nationality url".split()
         rows = unpacked(rows, *keys)
-        rows = tupled(rows, 'Constructor', *cols)
+        rows = tupled(rows, "Constructor", *cols)
 
         return list(rows)
 
     @property
     def f1drivers(self):
         """ List[namedtuple]: All drivers. """
-        rows = self('f1', 'drivers')
-        keys = 'MRData DriverTable Drivers'.split()
-        cols = 'driverId code dateOfBirth familyName givenName nationality'.split()
-        cols += 'permanentNumber url'.split()
+        rows = self("f1", "drivers")
+        keys = "MRData DriverTable Drivers".split()
+        cols = "driverId code dateOfBirth familyName givenName nationality".split()
+        cols += "permanentNumber url".split()
         rows = unpacked(rows, *keys)
-        rows = tupled(rows, 'Driver', *cols)
+        rows = tupled(rows, "Driver", *cols)
 
         return list(rows)
 
     @property
     def f1seasons(self):
         """ List[namedtuple]: All seasons. """
-        rows = self('f1', 'seasons')
-        keys = 'MRData SeasonTable Seasons'.split()
-        cols = 'season url'.split()
+        rows = self("f1", "seasons")
+        keys = "MRData SeasonTable Seasons".split()
+        cols = "season url".split()
         rows = unpacked(rows, *keys)
-        rows = tupled(rows, 'Season', *cols)
+        rows = tupled(rows, "Season", *cols)
 
         return list(rows)
 
     @property
     def f1status(self):
         """ List[namedtuple]: Status codes for race results. """
-        rows = self('f1', 'status')
-        keys = 'MRData StatusTable Status'.split()
-        cols = 'statusId count status'.split()
+        rows = self("f1", "status")
+        keys = "MRData StatusTable Status".split()
+        cols = "statusId count status".split()
         rows = unpacked(rows, *keys)
-        rows = tupled(rows, 'Status', *cols)
+        rows = tupled(rows, "Status", *cols)
 
         return list(rows)
 
@@ -150,7 +154,7 @@ class ErgastAPI:
         offset, total = 0, 1
         while offset < total:
             page = reply(*args, offset=offset)
-            total = int(page['MRData']['total'])
+            total = int(page["MRData"]["total"])
             offset += limit
             yield page
 
@@ -159,10 +163,10 @@ class ErgastAPI:
         download, querypath = self.download, self.querypath
 
         folder = querypath(*args)
-        if not any(folder.glob('*.json')):
+        if not any(folder.glob("*.json")):
             download(*args)
 
-        for path in sorted(folder.glob('*.json')):
+        for path in sorted(folder.glob("*.json")):
             with open(path) as file:
                 yield load(file)
 
@@ -178,7 +182,7 @@ class ErgastAPI:
             folder.mkdir(parents=True)
 
         for i, data in enumerate(batches(*args)):
-            path = (folder / str(i)).with_suffix('.json')
+            path = (folder / str(i)).with_suffix(".json")
             with open(path, "w") as file:
                 print(f"save {path}")
                 dump(data, file, allow_nan=False, indent=2)
@@ -187,7 +191,7 @@ class ErgastAPI:
         """ None: Delete any cached pages. """
         querypath = self.querypath
 
-        for path in querypath(*args).glob('*.json'):
+        for path in querypath(*args).glob("*.json"):
             print(f"rm {path}")
             path.unlink()
 
@@ -201,11 +205,11 @@ class ErgastAPI:
         """ dict: Data extracted from query reply. """
         limit, retries, timeout = self.limit, self.retries, self.timeout
 
-        path = "/".join(map(str, args)) + '.json'
+        path = "/".join(map(str, args)) + ".json"
         url = f"{BASE}/{path}?limit={limit}&offset={offset}"
         print(f"GET {url}")
 
-        for itry in reversed(range(1+retries)):
+        for itry in reversed(range(1 + retries)):
             try:
                 with urlopen(url, timeout=timeout) as file:
                     return loads(file.read())
