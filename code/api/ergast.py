@@ -1,5 +1,5 @@
 """
-ErgastF1 class and utility functions.
+Ergast API tools. https://ergast.gom/api/
 """
 from collections import namedtuple
 from itertools import chain
@@ -10,7 +10,7 @@ from sys import stderr as STDERR
 from time import sleep
 from urllib.request import urlopen
 
-BASE = 'https://ergast.com/api/f1'
+BASE = 'https://ergast.com/api'
 LIMIT = 100
 RETRIES = 2
 TIMEOUT = 8
@@ -32,37 +32,38 @@ def warn(*args, file=STDERR):
     """ None: Print error message to standard error stream. """
     print("ERROR", __name__, *args, file=file)
 
-class ErgastF1:
+class ErgastAPI:
     """
-    Get Formula 1 data from the ergast.com API.
+    Get data from https://ergast.com/api/ API.
 
     No external dependencies. Tested with Python 3.7.5.
-    Caches replies to avoid requesting the same data repeatedly.
-    Retries failed queries, but slows down to reduce server load.
+    Generates paged replies lazily. Can cache pages to local disk.
+    Retries failed queries with exponentially-increasing delay time.
 
-    Input a Path or string to choose a cache folder.
-    (Default is None with cache disabled.)
+    Inputs
+        folder      Path, str or None: Cache folder. Input None to disable cache.
+        limit       int: Maximum results per page.
+        retries     int: Maximum retries per query.
+        timeout     float: Max seconds to wait for each response.
 
+    Create an ErgastF1 which caches replies to disk.
     >>> api = ErgastF1('path/to/cache/folder')
 
     Call with query parameters to generate paged replies.
-
-    >>> pages = api(1990, 6, 'pitstops')
+    >>> pages = api('f1', 1990, 6, 'pitstops')
     >>> next(pages)
 
     Erase any cached results for a query.
-
-    >>> api.erase(1990, 6, 'pitstops')
+    >>> api.erase('f1', 1990, 6, 'pitstops')
 
     Some common queries return a pre-formatted list of namedtuples.
+    >>> api.f1circuits
+    >>> api.f1constructors
+    >>> api.f1drivers
+    >>> api.f1seasons
+    >>> api.f1status
 
-    >>> api.circuits
-    >>> api.constructors
-    >>> api.drivers
-    >>> api.seasons
-    >>> api.status
-
-    For big queries, consider downloading a database image: http://ergast.com/mrd/db/
+    For bigger queries, download a database image: https://ergast.com/mrd/db/
     """
 
     def __init__(self, folder=None, limit=LIMIT, retries=RETRIES, timeout=TIMEOUT):
@@ -84,10 +85,9 @@ class ErgastF1:
     # Tables
 
     @property
-    def circuits(self):
+    def f1circuits(self):
         """ List[namedtuple]: All tracks. """
-        rows = self('circuits')
-
+        rows = self('f1', 'circuits')
         keys = 'MRData CircuitTable Circuits'.split()
         cols = 'circuitId circuitName country lat long locality url'.split()
         rows = unpacked(rows, *keys)
@@ -97,10 +97,9 @@ class ErgastF1:
         return list(rows)
 
     @property
-    def constructors(self):
+    def f1constructors(self):
         """ List[namedtuple]: All constructors. """
-        rows = self('constructors')
-
+        rows = self('f1', 'constructors')
         keys = 'MRData ConstructorTable Constructors'.split()
         cols = 'constructorId name nationality url'.split()
         rows = unpacked(rows, *keys)
@@ -109,10 +108,9 @@ class ErgastF1:
         return list(rows)
 
     @property
-    def drivers(self):
+    def f1drivers(self):
         """ List[namedtuple]: All drivers. """
-        rows = self('drivers')
-
+        rows = self('f1', 'drivers')
         keys = 'MRData DriverTable Drivers'.split()
         cols = 'driverId code dateOfBirth familyName givenName nationality'.split()
         cols += 'permanentNumber url'.split()
@@ -122,10 +120,9 @@ class ErgastF1:
         return list(rows)
 
     @property
-    def seasons(self):
+    def f1seasons(self):
         """ List[namedtuple]: All seasons. """
-        rows = self('seasons')
-
+        rows = self('f1', 'seasons')
         keys = 'MRData SeasonTable Seasons'.split()
         cols = 'season url'.split()
         rows = unpacked(rows, *keys)
@@ -134,10 +131,9 @@ class ErgastF1:
         return list(rows)
 
     @property
-    def status(self):
+    def f1status(self):
         """ List[namedtuple]: Status codes for race results. """
-        rows = self('status')
-
+        rows = self('f1', 'status')
         keys = 'MRData StatusTable Status'.split()
         cols = 'statusId count status'.split()
         rows = unpacked(rows, *keys)
