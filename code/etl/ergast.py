@@ -4,18 +4,15 @@ Ergast database image readers. https://ergast.com/mrd/db/
 from pathlib import Path
 from zipfile import ZipFile
 
-from pandas import DataFrame, read_csv, to_timedelta
-
-REPO = Path(__file__).resolve().parent.parent.parent
-PATH = REPO / 'data/etl/ergastf1.zip'
+from pandas import read_csv, to_timedelta
 
 def to_seconds(s):
-    """ Series: Float Series from Series of minute:seconds.fraction strings. """
+    """ Series[float64]: Converted Series of minute:seconds.fraction strings. """
     s = s.str.partition(':')
 
     return 60 * s[0].astype(float) + s[2].astype(float)
 
-class ErgastTables:
+class ErgastF1:
     """
     Read Formula 1 data from an https://ergast.com/mrd/db database dump.
 
@@ -26,8 +23,8 @@ class ErgastTables:
     Inputs
         path    Path or str: Path to ZIP file containing CSVs.
 
-    Create an ErgastTables which reads from a specific ZIP file.
-    >>> tables = ErgastTables('path/to/ergast/data.zip')
+    Create an ErgastF1 which reads from a specific ZIP file.
+    >>> tables = ErgastF1('path/to/ergast/data.zip')
 
     DataFrames are available as read-only attributes.
     >>> tables.circuits
@@ -36,7 +33,7 @@ class ErgastTables:
     For smaller queries, use the Ergast API: https://ergast.com/mrd
     """
 
-    def __init__(self, path=PATH):
+    def __init__(self, path):
         self.path = Path(path).resolve()
 
     def __repr__(self):
