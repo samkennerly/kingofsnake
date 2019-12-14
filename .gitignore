@@ -7,7 +7,7 @@ Thumbs.db
 
 # Big data
 /data/*
-!/data/ergast/*
+!/data/ergast
 
 # Caches
 *.egg
