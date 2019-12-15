@@ -66,7 +66,7 @@ class ErgastF1:
         with ZipFile(path) as zf:
             return zf.namelist()
 
-    # Original Series
+    # Series
 
     @property
     def seasons(self):
@@ -83,7 +83,7 @@ class ErgastF1:
 
         return get("status.csv", **kw).pop("status")
 
-    # Original DataFrames
+    # DataFrames
 
     @property
     def circuits(self):
@@ -201,10 +201,6 @@ class ErgastF1:
         data = get("constructor_standings.csv", **kw)
 
         return data
-
-    # Derived tables
-
-
 
 """
 Copyright © 2019 Sam Kennerly

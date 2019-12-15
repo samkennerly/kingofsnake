@@ -16,6 +16,6 @@ def afew(data, n=5):
     schema = DataFrame()
     schema["dtype"] = data.dtypes
     schema["nulls"] = data.isnull().sum()
-    print(f"{len(data)} rows", schema, sep="\n")
+    print(f"[{len(data)} rows x {len(schema)} columns]", schema, sep="\n")
 
-    return data.sample(n)
+    return data.tail(n)
