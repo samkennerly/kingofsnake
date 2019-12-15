@@ -92,7 +92,7 @@ class ErgastF1:
         kw["usecols"] = set(kw["names"]) - {"alt", "url"}
         data = get("circuits.csv", **kw)
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def drivers(self):
@@ -102,8 +102,9 @@ class ErgastF1:
         kw["usecols"] = set(kw["names"]) - {"url"}
         data = get("driver.csv", **kw)
         data["number"] = data["number"].fillna(0).astype(int)
+        data["driver"] = data.pop("first").str.cat(data.pop("last"), sep=" ")
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def driver_standings(self):
@@ -112,7 +113,7 @@ class ErgastF1:
         kw["usecols"] = set(kw["names"]) - {"pos_str"}
         data = get("driver_standings.csv", **kw)
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def lap_times(self):
@@ -123,7 +124,7 @@ class ErgastF1:
         data = get("lap_times.csv", **kw)
         data["seconds"] = data.pop("msec") / 1000
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def pit_stops(self):
@@ -135,7 +136,7 @@ class ErgastF1:
         data["duration"] /= 1000
         data["time"] = to_timedelta(data.pop("time"))
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def qualifying(self):
@@ -146,7 +147,7 @@ class ErgastF1:
             data[col] = to_seconds(data[col])
         data["best"] = data[qcols].min(axis=1)
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def races(self):
@@ -157,7 +158,7 @@ class ErgastF1:
         data = get("races.csv", **kw)
         data["time"] -= data["time"].dt.normalize()
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def results(self):
@@ -173,7 +174,7 @@ class ErgastF1:
         for col in "number fastlap rank pos".split():
             data[col] = data[col].fillna(0).astype(int)
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def teams(self):
@@ -182,7 +183,7 @@ class ErgastF1:
         kw["usecols"] = set(kw["names"]) - {"url"}
         data = get("constructors.csv", **kw)
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def team_results(self):
@@ -191,7 +192,7 @@ class ErgastF1:
         data = get("constructor_results.csv", **kw)
         data["dsq"] = data.pop("status") == "D"
 
-        return data
+        return data.sort_index(axis=1)
 
     @property
     def team_standings(self):
@@ -200,7 +201,7 @@ class ErgastF1:
         kw["usecols"] = set(kw["names"]) - {"pos_str"}
         data = get("constructor_standings.csv", **kw)
 
-        return data
+        return data.sort_index(axis=1)
 
 """
 Copyright © 2019 Sam Kennerly
