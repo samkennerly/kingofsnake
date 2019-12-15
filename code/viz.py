@@ -50,7 +50,7 @@ class Plot:
         raise NotImplementedError
 
     def bar(self, data, **kwargs):
-        """ AxesSubplot: Bar plot for each column. """
+        """ AxesSubplot: Bar chart for each column. """
         kwargs.setdefault('kind', 'bar')
         kwargs.setdefault('grid', False)
         kwargs.setdefault('stacked', True)
@@ -71,12 +71,11 @@ class Plot:
         raise NotImplementedError
 
     def quant(self, data, q=(), **kwargs):
-        """ AxesSubplot: Quantiles for each column. """
         q = list(q) or [0, 0.05, 0.25, 0.50, 0.75, 0.95, 1]
         data = data.quantile(q=q)
         data.columns = data.columns.astype(str)
 
-        axes = data.plot.line(**kwargs)
+        return self(data, **kwargs)
 
     def scatter(self, data, **kwargs):
         raise NotImplementedError

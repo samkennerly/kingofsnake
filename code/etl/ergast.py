@@ -60,7 +60,7 @@ class ErgastF1:
         return data.rename_axis(None)
 
     @property
-    def names(self):
+    def tables(self):
         """ List[str]: Table names. """
         path = self.path
         with ZipFile(path) as zf:
