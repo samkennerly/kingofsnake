@@ -15,9 +15,10 @@ class Plot:
     """
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('cmap', CMAP)
-        kwargs.setdefault('figsize', FIGSIZE)
-        kwargs.setdefault('title', None)
+        setkw = kwargs.setdefault
+        setkw('cmap', CMAP)
+        setkw('figsize', FIGSIZE)
+        setkw('title', None)
 
         self.default = kwargs
         self.legend = dict(LEGEND)
@@ -51,10 +52,11 @@ class Plot:
 
     def bar(self, data, **kwargs):
         """ AxesSubplot: Bar chart for each column. """
-        kwargs.setdefault('kind', 'bar')
-        kwargs.setdefault('grid', False)
-        kwargs.setdefault('stacked', True)
-        kwargs.setdefault('width', 0.9)
+        setkw = kwargs.setdefault
+        setkw('kind', 'bar')
+        setkw('grid', False)
+        setkw('stacked', True)
+        setkw('width', 0.9)
 
         return self(data, **kwargs)
 
