@@ -5,7 +5,7 @@ UNDER CONSTRUCTION
 from pandas import DataFrame
 
 CMAP = 'nipy_spectral_r'
-FIGSIZE = (12, 6)
+FIGSIZE = (9, 5)
 LEGEND = (('bbox_to_anchor', (1, 1)), ('loc', 'upper left'))
 
 class Plot:
@@ -15,10 +15,11 @@ class Plot:
     """
 
     def __init__(self, **kwargs):
-        setkw = kwargs.setdefault
-        setkw('cmap', CMAP)
-        setkw('figsize', FIGSIZE)
-        setkw('title', None)
+        kwset = kwargs.setdefault
+        kwset('cmap', CMAP)
+        kwset('figsize', FIGSIZE)
+        kwset('grid', True)
+        kwset('title', None)
 
         self.default = kwargs
         self.legend = dict(LEGEND)
@@ -30,15 +31,20 @@ class Plot:
         kwargs = {**default, **kwargs}
         kwargs.pop('cmap') if 'color' in kwargs else None
         facecolor = kwargs.pop('facecolor', None)
+        legend = kwargs.pop('legend', legend)
         xlabel = kwargs.pop('xlabel', None)
         ylabel = kwargs.pop('ylabel', None)
 
         axes = DataFrame(data).plot(**kwargs)
         axes.figure.tight_layout()
-        axes.set_facecolor(facecolor) if facecolor else None
-        axes.set_xlabel(xlabel) if xlabel else None
-        axes.set_ylabel(ylabel) if ylabel else None
-        axes.legend(**legend)
+        if facecolor:
+            axes.set_facecolor(facecolor)
+        if legend:
+            axes.legend(**legend)
+        if xlabel:
+            axes.set_xlabel(xlabel)
+        if ylabel:
+            axes.set_ylabel(ylabel)
 
         return axes
 
@@ -56,11 +62,11 @@ class Plot:
 
     def bar(self, data, **kwargs):
         """ AxesSubplot: Bar chart for each column. """
-        setkw = kwargs.setdefault
-        setkw('grid', False)
-        setkw('kind', 'bar')
-        setkw('stacked', True)
-        setkw('width', 0.9)
+        kwset = kwargs.setdefault
+        kwset('grid', False)
+        kwset('kind', 'bar')
+        kwset('stacked', True)
+        kwset('width', 0.9)
 
         return self(data, **kwargs)
 
@@ -70,11 +76,10 @@ class Plot:
 
     def hist(self, data, **kwargs):
         """ AxesSubplot: Histogram for each column. """
-        setkw = kwargs.setdefault
-        setkw('grid', True)
-        setkw('kind', 'hist')
-        setkw('stacked', True)
-        setkw('bins', 33)
+        kwset = kwargs.setdefault
+        kwset('kind', 'hist')
+        kwset('stacked', True)
+        kwset('bins', 33)
 
         return self(data, **kwargs)
 
@@ -83,7 +88,23 @@ class Plot:
         raise NotImplementedError
 
     def scatter(self, data, **kwargs):
-        raise NotImplementedError
+        """
+        AxesSubplot: Scatterplot with first 2 columns as (x,y) pairs.
+        If 3rd column exists, then its values are colors for each point.
+        If 4th column exists, then its values are sizes for each point.
+        """
+        cols = data.columns
+        kwset = kwargs.setdefault
+        kwset('alpha', 0.5)
+        kwset('cmap', None)
+        kwset('kind', 'scatter')
+        kwset('legend', False)
+        kwset('x', cols[0])
+        kwset('y', cols[1])
+        kwset('c', data[cols[2]] if len(cols) > 2 else 'black')
+        kwset('s', data[cols[3]] if len(cols) > 3 else 64)
+
+        return self(data, **kwargs)
 
     # Timeseries input
 
@@ -91,8 +112,8 @@ class Plot:
         """ AxesSubplot: Contour plot of quantiles per period. """
         kwset = kwargs.setdefault
         kwset('color', list('krygbck'))
-        kwset('grid', True)
         kwset('stacked', False)
+
         q = list(q) or [0, 0.05, 0.25, 0.50, 0.75, 0.95, 1]
         data = ts.resample(freq).quantile(q).unstack()
         data.columns = [ f"{int(100 * x)} percentile" for x in data.columns ]
