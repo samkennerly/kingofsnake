@@ -75,7 +75,7 @@ class Plot:
         kwset = kwargs.setdefault
         kwset('kind', 'barh')
 
-        return self.bar(data, **kwargs)
+        return self.bar(data.iloc[::-1, :], **kwargs)
 
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
