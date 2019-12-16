@@ -70,6 +70,13 @@ class Plot:
 
         return self(data, **kwargs)
 
+    def barh(self, data, **kwargs):
+        """ AxesSubplot: Horizontal bar chart for each column. """
+        kwset = kwargs.setdefault
+        kwset('kind', 'barh')
+
+        return self.bar(data, **kwargs)
+
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
         raise NotImplementedError
