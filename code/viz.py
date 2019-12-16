@@ -5,7 +5,7 @@ UNDER CONSTRUCTION
 from pandas import DataFrame
 
 CMAP = 'nipy_spectral_r'
-FIGSIZE = (9, 5)
+FIGSIZE = (12, 6)
 LEGEND = (('bbox_to_anchor', (1, 1)), ('loc', 'upper left'))
 
 class Plot:
@@ -92,7 +92,11 @@ class Plot:
 
     def line(self, data, **kwargs):
         """ AxesSubplot: Line plot for each column. """
-        raise NotImplementedError
+        kwset = kwargs.setdefault
+        kwset('kind', 'line')
+        kwset('stacked', False)
+
+        return self(data, **kwargs)
 
     def scatter(self, data, **kwargs):
         """
@@ -102,7 +106,7 @@ class Plot:
         """
         cols = data.columns
         kwset = kwargs.setdefault
-        kwset('alpha', 0.5)
+        kwset('alpha', .5)
         kwset('cmap', None)
         kwset('kind', 'scatter')
         kwset('legend', False)
