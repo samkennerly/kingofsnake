@@ -5,8 +5,12 @@ UNDER CONSTRUCTION
 from pandas import DataFrame
 
 CMAP = 'nipy_spectral_r'
-FIGSIZE = (12, 6)
-LEGEND = (('bbox_to_anchor', (1, 1)), ('loc', 'upper left'))
+FIGSIZE = (10, 5)
+LEGEND = (
+    ('bbox_to_anchor', (1.05, 1)),
+    ('borderaxespad', 0.0),
+    ('loc', 'upper left')
+)
 
 class Plot:
     """
@@ -29,22 +33,17 @@ class Plot:
         default, legend = self.default, self.legend
 
         kwargs = {**default, **kwargs}
-        kwargs.pop('cmap') if 'color' in kwargs else None
         facecolor = kwargs.pop('facecolor', None)
         legend = kwargs.pop('legend', legend)
         xlabel = kwargs.pop('xlabel', None)
         ylabel = kwargs.pop('ylabel', None)
+        if 'color' in kwargs: kwargs.pop('cmap', None)
 
         axes = DataFrame(data).plot(**kwargs)
-        axes.figure.tight_layout()
-        if facecolor:
-            axes.set_facecolor(facecolor)
-        if legend:
-            axes.legend(**legend)
-        if xlabel:
-            axes.set_xlabel(xlabel)
-        if ylabel:
-            axes.set_ylabel(ylabel)
+        if facecolor: axes.set_facecolor(facecolor)
+        if legend: axes.legend(**legend)
+        if xlabel: axes.set_xlabel(xlabel)
+        if ylabel: axes.set_ylabel(ylabel)
 
         return axes
 
@@ -64,18 +63,34 @@ class Plot:
         """ AxesSubplot: Bar chart for each column. """
         kwset = kwargs.setdefault
         kwset('grid', False)
-        kwset('kind', 'bar')
         kwset('stacked', True)
         kwset('width', 0.9)
 
-        return self(data, **kwargs)
+        return self(data, kind='bar', **kwargs)
 
     def barh(self, data, **kwargs):
         """ AxesSubplot: Horizontal bar chart for each column. """
         kwset = kwargs.setdefault
-        kwset('kind', 'barh')
+        kwset('grid', False)
+        kwset('stacked', True)
+        kwset('width', 0.8)
 
-        return self.bar(data.iloc[::-1, :], **kwargs)
+        return self(data.iloc[::-1, :], kind='barh', **kwargs)
+
+    def box(self, data, **kwargs):
+        kwset = kwargs.setdefault
+        kwset('color', None)
+        kwset('legend', False)
+        kwset('rot', 90)
+
+        return self(data, kind='box', **kwargs)
+
+    def boxh(self, data, **kwargs):
+        kwset = kwargs.setdefault
+        kwset('vert', False)
+        kwset('rot', 0)
+
+        return self.box(data.iloc[::-1, :], **kwargs)
 
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
@@ -84,19 +99,17 @@ class Plot:
     def hist(self, data, **kwargs):
         """ AxesSubplot: Histogram for each column. """
         kwset = kwargs.setdefault
-        kwset('kind', 'hist')
         kwset('stacked', True)
         kwset('bins', 33)
 
-        return self(data, **kwargs)
+        return self(data, kind='hist', **kwargs)
 
     def line(self, data, **kwargs):
         """ AxesSubplot: Line plot for each column. """
         kwset = kwargs.setdefault
-        kwset('kind', 'line')
         kwset('stacked', False)
 
-        return self(data, **kwargs)
+        return self(data, kind='line', **kwargs)
 
     def scatter(self, data, **kwargs):
         """
@@ -108,14 +121,13 @@ class Plot:
         kwset = kwargs.setdefault
         kwset('alpha', .5)
         kwset('cmap', None)
-        kwset('kind', 'scatter')
         kwset('legend', False)
         kwset('x', cols[0])
         kwset('y', cols[1])
         kwset('c', data[cols[2]] if len(cols) > 2 else 'black')
         kwset('s', data[cols[3]] if len(cols) > 3 else 64)
 
-        return self(data, **kwargs)
+        return self(data, kind='scatter', **kwargs)
 
     # Timeseries input
 
@@ -129,7 +141,7 @@ class Plot:
         data = ts.resample(freq).quantile(q).unstack()
         data.columns = [ f"{int(100 * x)} percentile" for x in data.columns ]
 
-        return self(data, **kwargs)
+        return self(data, kind='line', **kwargs)
 
 
 
