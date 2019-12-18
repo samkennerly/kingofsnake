@@ -2,6 +2,7 @@
 Data visualization tools.
 UNDER CONSTRUCTION
 """
+from matplotlib import style as mpstyle
 from matplotlib.pyplot import figure
 from pandas import DataFrame
 
@@ -14,8 +15,8 @@ COLORMAP = 'nipy_spectral_r'
 FIGURE = (
     ('clear', True),
     ('dpi', 100),
-    ('edgecolor', '#ffffff'),
-    ('facecolor', '#ffffff'),
+    #('edgecolor', None),
+    #('facecolor', None),
     ('figsize', (9, 5)),
 )
 LEGEND = (
@@ -24,7 +25,7 @@ LEGEND = (
     ('loc', 'upper left'),
 )
 DEFAULT = (
-    ('facecolor', '#ffffff'),
+    #('facecolor', None),
     ('figsize', (10, 5)),
     ('fontsize', None),
     ('grid', True),
@@ -46,9 +47,11 @@ class Plot:
     UNDER CONSTRUCTION
     DataFrame inputs
     """
+    styles = mpstyle.available
 
-    def __init__(self, **kwargs):
+    def __init__(self, style='bmh', **kwargs):
         self.default = {**dict(DEFAULT), **kwargs}
+        mpstyle.use(style)
 
     def __call__(self, data, **kwargs):
         """ AxesSubplot: Fill default values and create figure. """
@@ -117,8 +120,7 @@ class Plot:
 
     def hist(self, data, **kwargs):
         """ AxesSubplot: Histogram for each column. """
-        kwargs.setdefault('bins', 33)
-        kwargs.setdefault('grid', False)
+        kwargs.setdefault('bins', 65)
         kwargs.setdefault('stacked', True)
 
         return self(data, kind='hist', **kwargs)
