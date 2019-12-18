@@ -2,14 +2,43 @@
 Data visualization tools.
 UNDER CONSTRUCTION
 """
+from matplotlib.pyplot import figure
 from pandas import DataFrame
 
-CMAP = 'nipy_spectral_r'
-FIGSIZE = (10, 5)
+AXES = (
+    ('frame_on', False),
+    ('xlabel', None),
+    ('ylabel', None),
+)
+COLORMAP = 'nipy_spectral_r'
+FIGURE = (
+    ('clear', True),
+    ('dpi', 100),
+    ('edgecolor', '#ffffff'),
+    ('facecolor', '#ffffff'),
+    ('figsize', (9, 5)),
+)
 LEGEND = (
     ('bbox_to_anchor', (1.05, 1)),
     ('borderaxespad', 0.0),
-    ('loc', 'upper left')
+    ('loc', 'upper left'),
+)
+DEFAULT = (
+    ('facecolor', '#ffffff'),
+    ('figsize', (10, 5)),
+    ('fontsize', None),
+    ('grid', True),
+    ('legend', True),
+    ('logx', False),
+    ('logy', False),
+    ('rot', 0),
+    ('style', None),
+    ('title', None),
+    ('use_index', True),
+    ('xlim', None),
+    ('xticks', None),
+    ('ylim', None),
+    ('yticks', None),
 )
 
 class Plot:
@@ -19,33 +48,27 @@ class Plot:
     """
 
     def __init__(self, **kwargs):
-        kwset = kwargs.setdefault
-        kwset('cmap', CMAP)
-        kwset('figsize', FIGSIZE)
-        kwset('grid', True)
-        kwset('title', None)
-
-        self.default = kwargs
-        self.legend = dict(LEGEND)
+        self.default = {**dict(DEFAULT), **kwargs}
 
     def __call__(self, data, **kwargs):
         """ AxesSubplot: Fill default values and create figure. """
-        default, legend = self.default, self.legend
+        kwargs = {**self.default, **kwargs}
 
-        kwargs = {**default, **kwargs}
-        facecolor = kwargs.pop('facecolor', None)
-        legend = kwargs.pop('legend', legend)
-        xlabel = kwargs.pop('xlabel', None)
-        ylabel = kwargs.pop('ylabel', None)
-        if 'color' in kwargs: kwargs.pop('cmap', None)
+        if 'color' in kwargs:
+            kwargs.pop('colormap', None)
 
-        axes = DataFrame(data).plot(**kwargs)
-        if facecolor: axes.set_facecolor(facecolor)
-        if legend: axes.legend(**legend)
-        if xlabel: axes.set_xlabel(xlabel)
-        if ylabel: axes.set_ylabel(ylabel)
+        # colorbar only for scatter, hexbin
+        # alpha only for ???
+        # stacked only for ???
 
-        return axes
+        data = DataFrame(data)
+        fig = figure(**{ k:kwargs.pop(k, v) for k, v in FIGURE })
+        ax = fig.add_subplot(**{ k:kwargs.pop(k, v) for k, v in AXES })
+        ax = data.plot(ax=ax, **kwargs)
+        if kwargs.get('legend'):
+            ax.legend(**dict(LEGEND))
+
+        return ax
 
     def __repr__(self):
         name = type(self).__name__
@@ -55,42 +78,38 @@ class Plot:
 
     # DataFrame input
 
-    def area(self, data, **kwargs):
-        """ AxesSubplot: Mountain plot for each column. """
-        raise NotImplementedError
-
     def bar(self, data, **kwargs):
         """ AxesSubplot: Bar chart for each column. """
-        kwset = kwargs.setdefault
-        kwset('grid', False)
-        kwset('stacked', True)
-        kwset('width', 0.9)
+        kwargs.setdefault('grid', False)
+        kwargs.setdefault('rot', 90)
+        kwargs.setdefault('stacked', True)
+        kwargs.setdefault('width', 0.9)
 
         return self(data, kind='bar', **kwargs)
 
     def barh(self, data, **kwargs):
         """ AxesSubplot: Horizontal bar chart for each column. """
-        kwset = kwargs.setdefault
-        kwset('grid', False)
-        kwset('stacked', True)
-        kwset('width', 0.8)
+        kwargs.setdefault('grid', False)
+        kwargs.setdefault('stacked', True)
+        kwargs.setdefault('width', 0.8)
 
         return self(data.iloc[::-1, :], kind='barh', **kwargs)
 
     def box(self, data, **kwargs):
-        kwset = kwargs.setdefault
-        kwset('color', None)
-        kwset('legend', False)
-        kwset('rot', 90)
+        """ AxesSubplot: Boxplot for each column. """
+        kwargs.setdefault('color', None)
+        kwargs.setdefault('legend', False)
+        kwargs.setdefault('grid', True)
+        kwargs.setdefault('rot', 90)
 
         return self(data, kind='box', **kwargs)
 
     def boxh(self, data, **kwargs):
-        kwset = kwargs.setdefault
-        kwset('vert', False)
-        kwset('rot', 0)
+        """ AxesSubplot: Horizontal boxplot for each column. """
+        kwargs.setdefault('vert', False)
+        kwargs.setdefault('rot', 0)
 
-        return self.box(data.iloc[::-1, :], **kwargs)
+        return self.box(data[reversed(data.columns)], **kwargs)
 
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
@@ -98,17 +117,14 @@ class Plot:
 
     def hist(self, data, **kwargs):
         """ AxesSubplot: Histogram for each column. """
-        kwset = kwargs.setdefault
-        kwset('stacked', True)
-        kwset('bins', 33)
+        kwargs.setdefault('bins', 33)
+        kwargs.setdefault('grid', False)
+        kwargs.setdefault('stacked', True)
 
         return self(data, kind='hist', **kwargs)
 
     def line(self, data, **kwargs):
         """ AxesSubplot: Line plot for each column. """
-        kwset = kwargs.setdefault
-        kwset('stacked', False)
-
         return self(data, kind='line', **kwargs)
 
     def scatter(self, data, **kwargs):
@@ -118,14 +134,13 @@ class Plot:
         If 4th column exists, then its values are sizes for each point.
         """
         cols = data.columns
-        kwset = kwargs.setdefault
-        kwset('alpha', .5)
-        kwset('cmap', None)
-        kwset('legend', False)
-        kwset('x', cols[0])
-        kwset('y', cols[1])
-        kwset('c', data[cols[2]] if len(cols) > 2 else 'black')
-        kwset('s', data[cols[3]] if len(cols) > 3 else 64)
+        kwargs.setdefault('alpha', .707)
+        kwargs.setdefault('colormap', COLORMAP)
+        kwargs.setdefault('legend', False)
+        kwargs.setdefault('x', cols[0])
+        kwargs.setdefault('y', cols[1])
+        kwargs.setdefault('c', data[cols[2]] if len(cols) > 2 else 'black')
+        kwargs.setdefault('s', data[cols[3]] if len(cols) > 3 else 64)
 
         return self(data, kind='scatter', **kwargs)
 
@@ -133,9 +148,8 @@ class Plot:
 
     def quant(self, ts, freq, q=(), **kwargs):
         """ AxesSubplot: Contour plot of quantiles per period. """
-        kwset = kwargs.setdefault
-        kwset('color', list('krygbck'))
-        kwset('stacked', False)
+        kwargs.setdefault('color', list('krygbck'))
+        kwargs.setdefault('stacked', False)
 
         q = list(q) or [0, 0.05, 0.25, 0.50, 0.75, 0.95, 1]
         data = ts.resample(freq).quantile(q).unstack()
@@ -143,6 +157,12 @@ class Plot:
 
         return self(data, kind='line', **kwargs)
 
+    # UNDER CONSTRUCTION
 
-
+    def area(self, data, **kwargs):
+        raise NotImplementedError
+    def density(self, data, **kwargs):
+        raise NotImplementedError
+    def hexbin(self, data, **kwargs):
+        raise NotImplementedError
 
