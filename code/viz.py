@@ -1,6 +1,5 @@
 """
-Data visualization tools.
-UNDER CONSTRUCTION
+Data visualization toolbox.
 """
 from matplotlib import style as mpstyle
 from matplotlib.pyplot import figure
@@ -15,8 +14,6 @@ COLORMAP = 'nipy_spectral_r'
 FIGURE = (
     ('clear', True),
     ('dpi', 100),
-    #('edgecolor', None),
-    #('facecolor', None),
     ('figsize', (9, 5)),
 )
 LEGEND = (
@@ -25,7 +22,6 @@ LEGEND = (
     ('loc', 'upper left'),
 )
 DEFAULT = (
-    #('facecolor', None),
     ('figsize', (10, 5)),
     ('fontsize', None),
     ('grid', True),
@@ -44,8 +40,8 @@ DEFAULT = (
 
 class Plot:
     """
-    UNDER CONSTRUCTION
-    DataFrame inputs
+    Plotting methods for pandas.DataFrame or .Series inputs.
+    Initialize with defaults. Call with keyword arguments to override defaults.
     """
     styles = mpstyle.available
 
@@ -59,10 +55,6 @@ class Plot:
 
         if 'color' in kwargs:
             kwargs.pop('colormap', None)
-
-        # colorbar only for scatter, hexbin
-        # alpha only for ???
-        # stacked only for ???
 
         data = DataFrame(data)
         fig = figure(**{ k:kwargs.pop(k, v) for k, v in FIGURE })
@@ -81,8 +73,12 @@ class Plot:
 
     # DataFrame input
 
+    def area(self, data, **kwargs):
+        """ AxesSubplot: Area plot for each column. """
+        raise NotImplementedError
+
     def bar(self, data, **kwargs):
-        """ AxesSubplot: Bar chart for each column. """
+        """ AxesSubplot: Bar plot for each column. """
         kwargs.setdefault('grid', False)
         kwargs.setdefault('rot', 90)
         kwargs.setdefault('stacked', True)
@@ -91,7 +87,7 @@ class Plot:
         return self(data, kind='bar', **kwargs)
 
     def barh(self, data, **kwargs):
-        """ AxesSubplot: Horizontal bar chart for each column. """
+        """ AxesSubplot: Horizontal bar plot for each column. """
         kwargs.setdefault('grid', False)
         kwargs.setdefault('stacked', True)
         kwargs.setdefault('width', 0.8)
@@ -99,7 +95,7 @@ class Plot:
         return self(data.iloc[::-1, :], kind='barh', **kwargs)
 
     def box(self, data, **kwargs):
-        """ AxesSubplot: Boxplot for each column. """
+        """ AxesSubplot: Box plot for each column. """
         kwargs.setdefault('color', None)
         kwargs.setdefault('legend', False)
         kwargs.setdefault('grid', True)
@@ -108,7 +104,7 @@ class Plot:
         return self(data, kind='box', **kwargs)
 
     def boxh(self, data, **kwargs):
-        """ AxesSubplot: Horizontal boxplot for each column. """
+        """ AxesSubplot: Horizontal box plot for each column. """
         kwargs.setdefault('vert', False)
         kwargs.setdefault('rot', 0)
 
@@ -120,6 +116,10 @@ class Plot:
 
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
+        raise NotImplementedError
+
+    def hexbin(self, data, **kwargs):
+        """ AxesSubplot: Scatterplot with hexagonal bins. """
         raise NotImplementedError
 
     def hist(self, data, **kwargs):
@@ -162,11 +162,3 @@ class Plot:
         data.columns = [ f"{int(100 * x)} percentile" for x in data.columns ]
 
         return self(data, kind='line', **kwargs)
-
-    # UNDER CONSTRUCTION
-
-    def area(self, data, **kwargs):
-        raise NotImplementedError
-    def hexbin(self, data, **kwargs):
-        raise NotImplementedError
-
