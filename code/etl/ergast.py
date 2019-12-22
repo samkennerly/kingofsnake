@@ -10,9 +10,8 @@ from pandas import read_csv, to_timedelta
 def to_seconds(s):
     """ Series[float64]: Converted Series of minute:seconds.fraction strings. """
     s = s.str.partition(":")
-    s = s[0].astype(float) + s[2].astype(float)
 
-    return 60 * s
+    return 60 * s[0].astype(float) + s[2].astype(float)
 
 
 class ErgastF1:
