@@ -114,13 +114,17 @@ class Plot:
 
         return self.box(data[reversed(data.columns)], **kwargs)
 
+    def density(self, data, **kwargs):
+        """ AxesSubplot: Probability density estimate for each column. """
+        return self(data, kind='density', **kwargs)
+
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
         raise NotImplementedError
 
     def hist(self, data, **kwargs):
         """ AxesSubplot: Histogram for each column. """
-        kwargs.setdefault('bins', 65)
+        kwargs.setdefault('bins', 33)
         kwargs.setdefault('stacked', True)
 
         return self(data, kind='hist', **kwargs)
@@ -162,8 +166,6 @@ class Plot:
     # UNDER CONSTRUCTION
 
     def area(self, data, **kwargs):
-        raise NotImplementedError
-    def density(self, data, **kwargs):
         raise NotImplementedError
     def hexbin(self, data, **kwargs):
         raise NotImplementedError
