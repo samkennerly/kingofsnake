@@ -38,11 +38,14 @@ def warn(*args, file=STDERR):
 
 class ErgastAPI:
     """
-    Get data from https://ergast.com/api/ API.
+    Get data from https://ergast.com/api/ politely.
 
     No external dependencies. Tested with Python 3.7.5.
-    Generates paged replies lazily. Can cache pages to local disk.
-    Retries failed queries with exponentially-increasing delay time.
+    Init with a path-like object to choose a cache folder.
+    Call to generate paged query replies with automatic retries.
+    Slows down after failed requests to avoid overloading the server.
+
+    For bigger queries, download a database image: https://ergast.com/mrd/db/
 
     Inputs
         folder      Path, str or None: Cache folder. Input None to disable cache.
@@ -50,24 +53,21 @@ class ErgastAPI:
         retries     int: Maximum retries per query.
         timeout     float: Max seconds to wait for each response.
 
-    Create an ErgastF1 which caches replies to disk.
-    >>> api = ErgastF1('path/to/cache/folder')
+    Create an ErgastAPI which caches replies to local disk.
+    >>> api = ErgastAPI('path/to/cache/folder')
 
     Call with query parameters to generate paged replies.
-    >>> pages = api('f1', 1990, 6, 'pitstops')
-    >>> next(pages)
+    >>> pages = [ x for x in api('f1', 1990, 6, 'pitstops') ]
 
-    Erase any cached results for a query.
+    Erase cached results (if any) for a specific query.
     >>> api.erase('f1', 1990, 6, 'pitstops')
 
-    Some common queries return a pre-formatted list of namedtuples.
+    Send pre-formatted queries. Each of these returns a list of namedtuples:
     >>> api.f1circuits
     >>> api.f1constructors
     >>> api.f1drivers
     >>> api.f1seasons
     >>> api.f1status
-
-    For bigger queries, download a database image: https://ergast.com/mrd/db/
     """
 
     def __init__(self, folder=None, limit=LIMIT, retries=RETRIES, timeout=TIMEOUT):
