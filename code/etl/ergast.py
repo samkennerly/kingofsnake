@@ -144,7 +144,6 @@ class ErgastF1:
         data = get("qualifying.csv", **kw)
         for col in qcols:
             data[col] = to_seconds(data[col])
-        data["best"] = data[qcols].min(axis=1)
 
         return data.sort_index(axis=1)
 
