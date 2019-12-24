@@ -32,12 +32,10 @@ class Plot:
     def __init__(self, style='bmh', **kwargs):
         mpstyle.use(style)
 
-        params = dict()
-        params['axes'] = { k:kwargs.pop(k,v) for k,v in AXES }
-        params['figure'] = { k:kwargs.pop(k,v) for k,v in FIGURE }
-        params['legend'] = { k:kwargs.pop(k,v) for k,v in LEGEND }
-
-        self.params = params
+        self.params = dict()
+        self.params['axes'] = { k:kwargs.pop(k,v) for k,v in AXES }
+        self.params['figure'] = { k:kwargs.pop(k,v) for k,v in FIGURE }
+        self.params['legend'] = { k:kwargs.pop(k,v) for k,v in LEGEND }
 
     def __call__(self, data, **kwargs):
         axes, params = self.axes, self.params
@@ -108,10 +106,42 @@ class Plot:
 
     def heat(self, data, **kwargs):
         """ AxesSubplot: Heatmap with same rows and columns as input. """
-        raise NotImplementedError
+        axes = self.axes
+
+        kwargs.setdefault('alpha', 0.707)
+        kwargs.setdefault('cmap', 'inferno')
+        kwargs.setdefault('edgecolor', None)
+        kwargs.setdefault('shading', 'flat')
+
+        axes = kwargs.pop('ax', None) or axes()
+        title = kwargs.pop('title', None)
+        xlabel = kwargs.pop('xlabel', None)
+        ylabel = kwargs.pop('ylabel', None)
+        colorbar = kwargs.pop('colorbar', True)
+        rotation = kwargs.pop('rot', 45)
+
+        data = DataFrame(data).iloc[::-1, :]
+        cols = data.columns
+        rows = data.index
+        axes.set_title(title)
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
+        axes.set_xticks(range(len(cols)))
+        axes.set_yticks(range(len(rows)))
+        axes.set_xticklabels(cols, ha='left', rotation=rotation)
+        axes.set_yticklabels(rows, verticalalignment='bottom')
+        axes.tick_params(labeltop=True, labelbottom=False, length=0)
+        plot = axes.pcolormesh(data, **kwargs)
+        if colorbar:
+            axes.figure.colorbar(plot)
+
+        return axes
 
     def hexbin(self, data, **kwargs):
         """ AxesSubplot: Scatterplot with hexagonal bins. """
+        kwargs.setdefault('cmap', 'cubehelix')
+        kwargs.setdefault('colorbar', True)
+
         raise NotImplementedError
 
     def hist(self, data, **kwargs):
@@ -139,8 +169,8 @@ class Plot:
         data = DataFrame(data)
         cols = data.columns
         kwargs.setdefault('alpha', .707)
-        kwargs.setdefault('colorbar', False)
-        kwargs.setdefault('colormap', 'nipy_spectral_r')
+        kwargs.setdefault('cmap', 'nipy_spectral_r')
+        kwargs.setdefault('colorbar', True)
         kwargs.setdefault('grid', True)
         kwargs.setdefault('legend', False)
         kwargs.setdefault('x', cols[0])
