@@ -118,7 +118,7 @@ class Plot:
         title = kwargs.pop("title", None)
         xlabel = kwargs.pop("xlabel", None)
         ylabel = kwargs.pop("ylabel", None)
-        colorbar = kwargs.pop("colorbar", True)
+        colorbar = kwargs.pop("colorbar", False)
         rotation = kwargs.pop("rot", 45)
 
         data = DataFrame(data).iloc[::-1, :]
@@ -141,7 +141,7 @@ class Plot:
     def hexbin(self, data, **kwargs):
         """ AxesSubplot: Scatterplot with hexagonal bins. """
         kwargs.setdefault("cmap", "cubehelix")
-        kwargs.setdefault("colorbar", True)
+        kwargs.setdefault("colorbar", False)
 
         raise NotImplementedError
 
@@ -171,7 +171,7 @@ class Plot:
         cols = data.columns
         kwargs.setdefault("alpha", 0.707)
         kwargs.setdefault("cmap", "nipy_spectral_r")
-        kwargs.setdefault("colorbar", True)
+        kwargs.setdefault("colorbar", False)
         kwargs.setdefault("grid", True)
         kwargs.setdefault("legend", False)
         kwargs.setdefault("x", cols[0])
