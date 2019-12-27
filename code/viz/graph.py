@@ -19,7 +19,7 @@ def weighted(links):
 
     links = links.groupby(cols[0:2], observed=True)
     links = links[cols[2]].sum() if (len(cols) > 2) else links.size().rename("_")
-    links = links.loc[links.ne(0)].astype(float).reset_index()
+    links = links.loc[links.ne(0)].reset_index()
     links.columns = 'source target weight'.split()
 
     nodes = sorted(set(links['source'].unique()) | set(links['target'].unique()))
@@ -30,11 +30,12 @@ def weighted(links):
 
 class Graph:
     """
-    Directed, weighted graph based on pandas.DataFrame.
+    Force-directed graph layout based on Gephi's ForceAtlas2 model.
 
-    Accepts any valid DataFrame() input with 2 or 3 columns.
-    Sums weights if they exist; else counts duplicated links.
-    Source and target are categorials with the same categories.
+    Accepts any valid pandas.DataFrame() input with 2 or 3 columns.
+    Stores graph links as DataFrame with 3 columns: source, target, weight.
+    'source' and 'target' are (node, node) pairs as Categorical variables.
+    'weight' sums link weights if they exist; else it counts duplicated links.
     """
 
     def __init__(self, graph):
@@ -73,8 +74,11 @@ class Graph:
         return f"{type(self).__name__} with {len(self)} links\n{self.links}"
 
     def frame(self, n):
+        """ DataFrame: [node|x,y] after n steps of evolution. """
         nodes = self.nodes
-        for x,y in self(n): pass
+
+        for x,y in self(n):
+            pass
 
         return DataFrame({'x': x, 'y': y}, index=nodes)
 
