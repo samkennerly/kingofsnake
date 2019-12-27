@@ -17,8 +17,8 @@ def limited(z, maxr):
 def weighted(links):
     """ DataFrame: [source, target, weight] for each link. """
     links = DataFrame(links)
-    cols = list(links.columns)
 
+    cols = list(links.columns)
     links = links.groupby(cols[0:2], observed=True)
     links = links[cols[2]].sum() if (len(cols) > 2) else links.size().rename("_")
     links = links.loc[links.ne(0)].reset_index()
@@ -44,12 +44,12 @@ class Graph:
     def __init__(self, graph):
         self.links = graph.links if isinstance(graph, type(self)) else weighted(graph)
 
-    def __call__(self, steps=100):
+    def __call__(self, steps, x=(), y=()):
         matrix, nodes = self.matrix, self.nodes
 
         n = len(nodes)
-        dtype = "complex128"
-        points = 0.5 * (randn(n) + 1j * randn(n)).astype(dtype)
+        dtype = 'complex128'
+        points = ((x or 0.5 * randn(n)) + 1j * (y or 0.5 * randn(n))).astype(dtype)
 
         yield points.real.copy(), points.imag.copy()
 
@@ -76,11 +76,10 @@ class Graph:
     def __repr__(self):
         return f"{type(self).__name__} with {len(self)} links\n{self.links}"
 
-    def frame(self, n):
+    def frame(self, steps=120):
         """ DataFrame: [node|x,y] after n steps of evolution. """
         nodes = self.nodes
-
-        for x, y in self(n):
+        for x, y in self(steps):
             pass
 
         return DataFrame({"x": x, "y": y}, index=nodes)
