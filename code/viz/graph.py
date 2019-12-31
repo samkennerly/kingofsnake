@@ -48,7 +48,7 @@ class Graph:
         matrix, nodes = self.matrix, self.nodes
 
         n = len(nodes)
-        dtype = 'complex128'
+        dtype = "complex128"
         points = ((x or 0.5 * randn(n)) + 1j * (y or 0.5 * randn(n))).astype(dtype)
 
         yield points.real.copy(), points.imag.copy()
