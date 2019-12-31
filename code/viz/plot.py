@@ -13,7 +13,7 @@ FIGURE = (
     ("facecolor", None),
     ("figsize", (9, 5)),
     ("frameon", False),
-    ("tight_layout", False),
+    ("tight_layout", True),
 )
 LEGEND = (
     ("bbox_to_anchor", (1.05, 1)),
@@ -52,7 +52,6 @@ class Plot:
         axes.set_ylabel(ylabel)
         if kwargs.get("legend"):
             axes.legend(**params["legend"])
-        axes.figure.tight_layout()
 
         return axes
 
