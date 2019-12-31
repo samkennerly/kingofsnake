@@ -95,7 +95,7 @@ class Plot:
         """ AxesSubplot: Horizontal box plot for each column. """
         kwargs.setdefault("grid", True)
 
-        return self(data, kind="box", vert=False, **kwargs)
+        return self(data.iloc[:, ::-1], kind="box", vert=False, **kwargs)
 
     def density(self, data, **kwargs):
         """ AxesSubplot: Probability density estimate for each column. """
