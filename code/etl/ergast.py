@@ -88,7 +88,7 @@ class ErgastF1:
     def circuits(self):
         get, kw = self.get, {}
         kw["names"] = "id ref circuit city country latitude longitude alt url".split()
-        kw["usecols"] = set(kw["names"]) - {"alt", "url"}
+        kw["usecols"] = set(kw["names"]) - {"alt"}
         data = get("circuits.csv", **kw)
 
         return data.sort_index(axis=1)
@@ -152,7 +152,6 @@ class ErgastF1:
         get, kw = self.get, {}
         kw["names"] = "id season round id_circuit race date time url".split()
         kw["parse_dates"] = ["date", "time"]
-        kw["usecols"] = set(kw["names"]) - {"url"}
         data = get("races.csv", **kw)
         data["time"] -= data["time"].dt.normalize()
 
@@ -178,7 +177,6 @@ class ErgastF1:
     def teams(self):
         get, kw = self.get, {}
         kw["names"] = "id ref team nation url".split()
-        kw["usecols"] = set(kw["names"]) - {"url"}
         data = get("constructors.csv", **kw)
 
         return data.sort_index(axis=1)
