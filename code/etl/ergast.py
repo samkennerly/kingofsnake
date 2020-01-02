@@ -98,7 +98,6 @@ class ErgastF1:
         get, kw = self.get, {}
         kw["names"] = "id ref number code first last birthday nation url".split()
         kw["parse_dates"] = ["birthday"]
-        kw["usecols"] = set(kw["names"]) - {"url"}
         data = get("driver.csv", **kw)
         data["number"] = data["number"].fillna(0).astype(int)
         data["driver"] = data.pop("first").str.cat(data.pop("last"), sep=" ")
