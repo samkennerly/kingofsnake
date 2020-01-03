@@ -1,4 +1,4 @@
-from numpy import fromiter, geomspace, linspace, tanh
+from numpy import fromiter, linspace, tanh
 from numpy.random import randn
 from pandas import Categorical, DataFrame
 from scipy.sparse import coo_matrix, diags, identity
@@ -44,24 +44,25 @@ class Graph:
     def __init__(self, graph):
         self.links = graph.links if isinstance(graph, type(self)) else weighted(graph)
 
-    def __call__(self, steps, x=(), y=()):
+    def __call__(self, nsteps, x=(), y=()):
         matrix, nodes = self.matrix, self.nodes
 
-        n = len(nodes)
         dtype = "complex128"
-        points = ((x or 0.5 * randn(n)) + 1j * (y or 0.5 * randn(n))).astype(dtype)
+        nrows = len(nodes)
+        points = (x or randn(nrows)).astype(dtype)
+        points += (y or 1j * randn(nrows)).astype(dtype)
 
         yield points.real.copy(), points.imag.copy()
 
         matrix -= diags(matrix.diagonal())
-        matrix *= n / matrix.sum()
+        matrix *= nrows / matrix.sum()
         matrix = laplacian(matrix, use_out_degree=True)
-        matrix += identity(n, dtype=matrix.dtype, format=matrix.format)
+        matrix += identity(nrows, dtype=matrix.dtype, format=matrix.format)
 
-        for speed in linspace(1, 0.01, steps - 1):
+        for speed in linspace(1, 0.1, nsteps - 1):
             forces = (z - points for z in points)
             forces = (z / (z * z.conj()).real.clip(1e-9, None) for z in forces)
-            forces = fromiter((z.mean() for z in forces), count=n, dtype=dtype)
+            forces = fromiter((z.mean() for z in forces), count=nrows, dtype=dtype)
             forces -= matrix.dot(points)
             points += limited(forces, speed)
 
