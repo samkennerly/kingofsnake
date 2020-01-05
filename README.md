@@ -1,6 +1,6 @@
-# kingofsnake (UNDER CONSTRUCTION)
+# kingofsnake
 
-Keep your Pythons separated so they don't get entangled.
+Did you install too many Pythons?
 
 ![poster](kingofsnake.jpeg)
 
@@ -8,18 +8,19 @@ Keep your Pythons separated so they don't get entangled.
 
 `kingofsnake` is a [template] for a [reproducible] research project which:
 
-- runs [Jupyter] in [Docker containers] which [self-destruct].
-- never installs software outside of its own [Docker images].
-- never uses or modifies other Pythons, [Anaconda], or [virtualenvs].
+- runs [Jupyter] in [Docker containers].
+- installs nothing outside of its [Docker images].
+- never conflicts with system Python(s), [Anaconda], or [virtualenvs].
 - updates `requirements.txt` with [pinned versions] of all [pip] installs.
 
-For developing [production] code, see the [pydiner] template.
+This template is intended for [exploratory] data analysis.
+For [production] code, see the [pydiner] template.
 
 [template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [reproducible]: https://en.wikipedia.org/wiki/Replication_crisis
+[exploratory]: https://knowyourmeme.com/photos/234739-i-have-no-idea-what-im-doing
 [Jupyter]: https://jupyter.org/
 [Docker containers]: https://docs.docker.com/develop/
-[self-destruct]: https://docs.docker.com/engine/reference/run/#clean-up---rm
 [Docker images]: https://docs.docker.com/engine/docker-overview/
 [Anaconda]: https://www.anaconda.com/
 [virtualenvs]: https://virtualenv.pypa.io/en/latest/
@@ -29,6 +30,8 @@ For developing [production] code, see the [pydiner] template.
 [pydiner]: https://github.com/samkennerly/pydiner/
 
 ## basics
+
+Do not install `kingofsnake`. Instead:
 
 1. Generate a repo [from this template].
 1. Open a [terminal] and `cd` to this folder.
@@ -47,8 +50,8 @@ The `kitchen` script defines [shell functions] for common Docker commands.
 1. Run `./kitchen bake` to build a `kingofsnake:latest` image.
 1. Run `./kitchen freeze` to update `requirements.txt` and rebuild.
 
-Building a new image can take several minutes.
-Rebuilding is much faster if nothing has changed.
+Building a new image takes a few minutes.
+Rebuilding is much faster unless requirements have changed.
 
 ### serve Jupyter
 
@@ -56,7 +59,7 @@ Rebuilding is much faster if nothing has changed.
 1. Open a browser and enter `localhost:8888` in the address bar.
 1. To stop Jupyter, click on the terminal running it and press *CTRL-C*.
 
-The `serve` command [mounts] a few folders so Jupyter can access them:
+The `serve` command [mounts] some folders so Jupyter can access them:
 
 - `~/.ipython` as `/home/kos/.ipython`
 - `~/.jupyter` as `/home/kos/.jupyter`
@@ -98,27 +101,48 @@ The `runit` command does not mount folders, publish ports, or start Jupyter.
 
 ### delete everything
 
+When in doubt, [nuke it from orbit] and start over.
+
 1. Run `./kitchen clean` to stop and delete all `kingofsnake` containers.
 1. Run `./kitchen eightysix` to delete the `kingofsnake` image.
 
-When in doubt, [nuke it from orbit] and start over.
+Cleaning is often unnecessary because `kingofsnake` containers [self-destruct].
 
 [nuke it from orbit]: https://www.imdb.com/title/tt0090605/characters/nm0000244
+[self-destruct]: https://docs.docker.com/engine/reference/run/#clean-up---rm
 
 ## contents
 
+### books
+
+Example Jupyter notebooks.
+
+### code
+
+Example [packages] for [APIs], [ETL], and visualization.
+
+### data
+
+This folder is [gitignored] except for an example dataset from [Ergast].
+
+[packages]: https://docs.python.org/3/tutorial/modules.html#packages
+[APIs]: https://en.wikipedia.org/wiki/Application_programming_interface
+[ETL]: https://en.wikipedia.org/wiki/Extract,_transform,_load
+[gitignored]: https://git-scm.com/docs/gitignore
+[Ergast]: http://ergast.com/mrd/db/
+
 ## dependencies
 
-`kingofsnake` does not require Python. It has one dependency:
+1. Docker for [Linux] or [Mac] or [Windows].
 
-- Docker for [Linux] or [Mac] or [Windows]
-
-Windows users may need to edit the `kitchen` script for [path compatibility].
+Python is not required.
+Windows users may need to edit the `kitchen` for [path compatibility].
 
 [Linux]: https://docs.docker.com/install/
 [Mac]: https://docs.docker.com/docker-for-mac/install/
 [Windows]: https://docs.docker.com/docker-for-windows/
 [path compatibility]: https://en.wikipedia.org/wiki/Path_(computing)#MS-DOS/Microsoft_Windows_style
+
 
 ## examples
 
@@ -141,7 +165,7 @@ Delete all traces of `kingofsnake:karl`.
 
 ## faq
 
-### Make it stop!!!1!
+### I'm stuck in a container!
 
 Click on the terminal running Jupyter and press *CTRL-C*.
 
