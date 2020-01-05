@@ -180,3 +180,8 @@ Don't. Use it as a [template] for a new repository.
 Yes, but not with the `kitchen` script. See the [Docker run reference].
 
 [Docker run reference]: https://docs.docker.com/engine/reference/run/
+
+### Do I need all these notebooks and/or packages?
+
+No. Files in the `books`, `code`, and `data` folders are examples.
+Delete them if you want to.
