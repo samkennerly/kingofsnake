@@ -39,10 +39,16 @@ class Graph:
     """
     Force-directed graph layout based on Gephi's ForceAtlas2 model.
 
-    Accepts any valid pandas.DataFrame() input with 2 or 3 columns.
-    Stores graph links as DataFrame with 3 columns: source, target, weight.
-    'source' and 'target' are (node, node) pairs as Categorical variables.
-    'weight' sums link weights if they exist; else it counts duplicated links.
+    Initialize with any valid DataFrame input with 2 or 3 columns.
+    Graph stores links as a DataFrame with 3 columns: source, target, weight.
+    If input has 2 columns, then each row is assigned weight 1.
+    Weights for duplicated (node, node) pairs are summed.
+
+    Call with a number of timesteps to return two NumPy arrays (x, y).
+    Call accepts optional starting coordinates as 'x', 'y' keyword arguments.
+    Coordinates are typically, but not always, in the range [-1, 1].
+
+    Iterating over a Graph returns rows as namedtuples.
     """
 
     def __init__(self, graph):
@@ -82,7 +88,7 @@ class Graph:
         return f"{type(self).__name__} with {len(self)} links\n{self.links}"
 
     def frame(self, steps=120):
-        """ DataFrame: [node|x,y] after n steps of evolution. """
+        """ DataFrame: Finished graph layout. Intermediate steps are discarded. """
         nodes = self.nodes
         for x, y in self(steps):
             pass
@@ -91,7 +97,7 @@ class Graph:
 
     @property
     def matrix(self):
-        """ scipy.sparse.coo: Links as a sparse matrix. """
+        """ scipy.sparse.coo: Sparse adjacency matrix. """
         links, nodes = self.links, self.nodes
 
         i = links["source"].cat.codes.values
