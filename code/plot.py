@@ -4,6 +4,7 @@ Data visualization toolbox.
 from matplotlib import style as mpstyle
 from matplotlib.pyplot import figure
 from pandas import DataFrame
+from scipy.cluster.hierarchy import dendrogram
 
 AXES = (("frame_on", False),)
 FIGURE = (
@@ -198,3 +199,22 @@ class Plot:
         data.columns = [f"{int(100 * x)} percentile" for x in data.columns]
 
         return self(data, kind="line", **kwargs)
+
+    # SciPy linkage matrix input
+
+    def linkage(self, links, p=0, **kwargs):
+        """ AxesSubplot: SciPy dendrogram of a cluster linkage matrix. """
+        axes = self.axes()
+
+        axes.set_title(kwargs.pop('title', None))
+        axes.set_xlabel(kwargs.pop('xlabel', None))
+        axes.set_ylabel(kwargs.pop('ylabel', 'distance'))
+        kwargs.setdefault('count_sort', True)
+        kwargs.setdefault('labels', None)
+        kwargs.setdefault('no_labels', False)
+        kwargs.setdefault('orientation', 'top')
+        kwargs.setdefault('truncate_mode', 'lastp')
+
+        dendrogram(links, ax=axes, p=p, **kwargs)
+
+        return axes
