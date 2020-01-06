@@ -65,7 +65,9 @@ class Plot:
 
     def area(self, data, **kwargs):
         """ AxesSubplot: Area plot for each column. """
-        raise NotImplementedError
+        kwargs.setdefault('legend', True)
+
+        return self(data, kind='area', **kwargs)
 
     def bar(self, data, **kwargs):
         """ AxesSubplot: Bar plot for each column. """
