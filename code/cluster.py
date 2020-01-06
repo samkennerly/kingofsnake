@@ -15,13 +15,13 @@ class ClusterTree:
     Input 'cats' (iterable of category labels) to return a categorical Series.
     Extra keyword arguments are passed to scipy.cluster.hierarchy.fcluster().
 
-    Uses SciPy to calculate a "linkage matrix" when initialized.
     See scipy.cluster.hierarchy docs for more information.
     """
 
     def __init__(self, data, **kwargs):
         kwargs.setdefault('method', 'average')
         kwargs.setdefault('metric', 'cosine')
+
         links = linkage(data, **kwargs)
         links = DataFrame(links, columns='a b distance count'.split())
         for c in links.columns.drop('distance'):
@@ -33,8 +33,7 @@ class ClusterTree:
         leaves, links = self.leaves, self.links
 
         kwargs.setdefault('criterion', 'maxclust')
-        cluster = fcluster(links, n, **kwargs)
-        cluster -= 1
+        cluster = fcluster(links, n, **kwargs) - 1
         if len(cats):
             cluster = Categorical.from_codes(cluster, cats)
 
