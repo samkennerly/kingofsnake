@@ -66,9 +66,9 @@ class Plot:
 
     def area(self, data, **kwargs):
         """ AxesSubplot: Area plot for each column. """
-        kwargs.setdefault('legend', True)
+        kwargs.setdefault("legend", True)
 
-        return self(data, kind='area', **kwargs)
+        return self(data, kind="area", **kwargs)
 
     def bar(self, data, **kwargs):
         """ AxesSubplot: Bar plot for each column. """
@@ -206,14 +206,14 @@ class Plot:
         """ AxesSubplot: SciPy dendrogram of a cluster linkage matrix. """
         axes = self.axes()
 
-        axes.set_title(kwargs.pop('title', None))
-        axes.set_xlabel(kwargs.pop('xlabel', None))
-        axes.set_ylabel(kwargs.pop('ylabel', 'distance'))
-        kwargs.setdefault('count_sort', True)
-        kwargs.setdefault('labels', None)
-        kwargs.setdefault('no_labels', False)
-        kwargs.setdefault('orientation', 'top')
-        kwargs.setdefault('truncate_mode', 'lastp')
+        axes.set_title(kwargs.pop("title", None))
+        axes.set_xlabel(kwargs.pop("xlabel", None))
+        axes.set_ylabel(kwargs.pop("ylabel", "distance"))
+        kwargs.setdefault("count_sort", True)
+        kwargs.setdefault("labels", None)
+        kwargs.setdefault("no_labels", False)
+        kwargs.setdefault("orientation", "top")
+        kwargs.setdefault("truncate_mode", "lastp")
 
         dendrogram(links, ax=axes, p=p, **kwargs)
 

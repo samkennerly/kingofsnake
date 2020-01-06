@@ -25,10 +25,10 @@ def afew(data, n=5):
 def iris():
     """ DataFrame: Fisher's iris dataset with covfefe removed. """
     data = load_iris()
-    cols = [ x.rstrip('(cm)').strip().replace(' ', '_') for x in data.feature_names ]
+    cols = [x.rstrip("(cm)").strip().replace(" ", "_") for x in data.feature_names]
     cats = Categorical.from_codes(data.target, data.target_names)
     data = DataFrame(data.data, columns=cols)
-    data.insert(0, 'species', cats)
+    data.insert(0, "species", cats)
 
     return data
 
