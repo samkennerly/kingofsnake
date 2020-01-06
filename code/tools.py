@@ -3,7 +3,8 @@ Constants and utility functions.
 """
 from pathlib import Path
 
-from pandas import Categorical, DataFrame, Series
+from numpy import random
+from pandas import Categorical, DataFrame, Series, read_csv
 from sklearn.datasets import load_iris
 
 from graph import Graph
@@ -15,11 +16,8 @@ DATADIR = REPO / "data"
 
 
 def afew(data, n=5):
-    """ DataFrame: Print DataFrame metadata and return a few rows. """
-    schema = DataFrame({"dtype": data.dtypes, "nulls": data.isnull().sum()})
-    print(f"[{len(data)} rows x {len(schema)} columns]", schema, sep="\n")
-
-    return data.tail(n)
+    """ DataFrame view: Select random rows from input DataFrame. """
+    return data.loc[random.choice(data.index, 5)]
 
 
 def iris():
@@ -31,6 +29,11 @@ def iris():
     data.insert(0, "species", cats)
 
     return data
+
+
+def schema(data):
+    """ DataFrame: Types and null counts for input DataFrame. """
+    return DataFrame({"dtype": data.dtypes, "nulls": data.isnull().sum()})
 
 
 def zscores(data, robust=False):
