@@ -209,6 +209,7 @@ class Plot:
         axes.set_title(kwargs.pop("title", None))
         axes.set_xlabel(kwargs.pop("xlabel", None))
         axes.set_ylabel(kwargs.pop("ylabel", "distance"))
+        kwargs.setdefault("color_threshold", 0.5)
         kwargs.setdefault("count_sort", True)
         kwargs.setdefault("labels", None)
         kwargs.setdefault("no_labels", False)
