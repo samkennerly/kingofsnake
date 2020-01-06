@@ -3,7 +3,11 @@ Constants and utility functions.
 """
 from pathlib import Path
 
-from pandas import DataFrame, Series
+from pandas import Categorical, DataFrame, Series
+from sklearn.datasets import load_iris
+
+from graph import Graph
+from plot import Plot
 
 REPO = Path(__file__).resolve().parent.parent
 DATADIR = REPO / "data"
@@ -15,3 +19,12 @@ def afew(data, n=5):
 
     return data.tail(n)
 
+def iris():
+    """ DataFrame: Fisher's iris dataset with covfefe removed. """
+    data = load_iris()
+    cols = [ x.rstrip('(cm)').strip().replace(' ', '_') for x in data.feature_names ]
+    cats = Categorical.from_codes(data.target, data.target_names)
+    data = DataFrame(data.data, columns=cols)
+    data.insert(0, 'species', cats)
+
+    return data
