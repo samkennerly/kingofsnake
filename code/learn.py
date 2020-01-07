@@ -5,6 +5,7 @@ from pandas import Categorical, DataFrame, Series
 from scipy.cluster.hierarchy import fcluster, linkage
 from sklearn import linear_model
 
+
 class Classify:
     """
     Train, use, and re-use an automatic classifier.
@@ -23,7 +24,7 @@ class Classify:
     Note: Some models cannot return class probabilities.
     """
 
-    def __init__(self, clues, answers, model='LogisticRegressionCV', **kwargs):
+    def __init__(self, clues, answers, model="LogisticRegressionCV", **kwargs):
         answers = Categorical(answers)
         clues = DataFrame(clues)
         model = getattr(linear_model, str(model))
@@ -41,14 +42,14 @@ class Classify:
             data.index = clues.index
         else:
             data = Categorical.from_codes(model.predict(clues), categories=cats)
-            data = Series(data, index=clues.index, name='class')
+            data = Series(data, index=clues.index, name="class")
 
         return data
 
     def __repr__(self):
         clsname = type(self).__name__
         modname = type(self.model).__name__
-        keyvals = " ".join( f"\n    {k}={v}" for k, v in self.params.items() )
+        keyvals = " ".join(f"\n    {k}={v}" for k, v in self.params.items())
 
         return f"{clsname}(\n    model={modname}, {keyvals})"
 
