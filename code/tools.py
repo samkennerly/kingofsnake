@@ -26,6 +26,19 @@ def irisdata():
     return DataFrame(data.data, columns=cols).assign(species=cats)
 
 
+def nycenergy(path=DATADIR/'examples/energy.csv', start=2000):
+    """ DataFrame: New York state energy sources. """
+    data = read_csv(path)
+    data.columns = data.columns.str.strip().str.lower().str.replace(' ', '_')
+    data = data.loc[lambda df: df['year'].ge(start)].drop(columns = ['total'])
+    data['hydro'] = data.pop('conv._hydro') + data.pop('ps_hydro')
+    data['year'] = to_datetime(data['year'], format='%Y')
+    data['gas'] = data.pop('lfg') + data.pop('natural_gas')
+    data = data.set_index('year').sort_index().sort_index(axis=1)
+
+    return data
+
+
 def schema(data):
     """ DataFrame: Types and null counts for input DataFrame. """
     return DataFrame({"dtype": data.dtypes, "nulls": data.isnull().sum()})
