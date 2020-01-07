@@ -28,14 +28,6 @@ class Classify:
         clues = DataFrame(clues)
         model = getattr(linear_model, str(model))
 
-        #kwargs.setdefault('class_weight', 'balanced')
-        #kwargs.setdefault('Cs', 10)
-        #kwargs.setdefault('fit_intercept', True)
-        #kwargs.setdefault('max_iter', 100)
-        #kwargs.setdefault('penalty', 'l1')
-        #kwargs.setdefault('solver', 'liblinear')
-        #kwargs.setdefault('tol', 1e-4)
-
         self.cats = answers.categories.tolist()
         self.columns = clues.columns.tolist()
         self.model = model(**kwargs).fit(clues, answers.codes)
@@ -49,7 +41,7 @@ class Classify:
             data.index = clues.index
         else:
             data = Categorical.from_codes(model.predict(clues), categories=cats)
-            data = Series(data, index=clues.index, name='guess')
+            data = Series(data, index=clues.index, name='class')
 
         return data
 
@@ -62,10 +54,12 @@ class Classify:
 
     @property
     def params(self):
+        """ dict: Model parameters. """
         return self.model.get_params()
 
     @property
     def coefs(self):
+        """ DataFrame: Model coefficients. """
         return DataFrame(self.model.coef_, index=self.cats, columns=self.columns)
 
 
