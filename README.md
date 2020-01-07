@@ -1,154 +1,135 @@
 # kingofsnake
 
-Did you install too many Pythons?
+Analyze data without installing multiple Pythons.
 
-![poster](kingofsnake.jpeg)
+<img alt="poster" src="kingofsnake.jpeg" title="Asps. Very dangerous.">
+
+This template is intended for [research] code.
+For a [production] template, see [pydiner].
+
+[research]: https://knowyourmeme.com/photos/234739-i-have-no-idea-what-im-doing
+[production]: https://en.wikipedia.org/wiki/Deployment_environment
+[pydiner]: https://github.com/samkennerly/pydiner/
 
 ## abstract
 
 `kingofsnake` is a [template] for a [reproducible] research project which:
 
-- runs [Jupyter] in [Docker containers].
+- runs [Jupyter] in a [container].
 - installs nothing outside of its [Docker images].
 - never conflicts with system Python(s), [Anaconda], or [virtualenvs].
 - updates `requirements.txt` with [pinned versions] of all [pip] installs.
 
-This template is intended for [exploratory] data analysis.
-For [production] code, see the [pydiner] template.
+Example [modules] for graph data, machine learning, and plotting are included.
 
 [template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [reproducible]: https://en.wikipedia.org/wiki/Replication_crisis
-[exploratory]: https://knowyourmeme.com/photos/234739-i-have-no-idea-what-im-doing
 [Jupyter]: https://jupyter.org/
-[Docker containers]: https://docs.docker.com/develop/
+[container]: https://docs.docker.com/develop/
 [Docker images]: https://docs.docker.com/engine/docker-overview/
 [Anaconda]: https://www.anaconda.com/
 [virtualenvs]: https://virtualenv.pypa.io/en/latest/
 [pinned versions]: https://pip.pypa.io/en/stable/user_guide/#pinned-version-numbers
 [pip]: https://pip.pypa.io/en/stable/
-[production]: https://en.wikipedia.org/wiki/Deployment_environment
-[pydiner]: https://github.com/samkennerly/pydiner/
+[modules]: https://docs.python.org/3/tutorial/modules.html
 
 ## basics
 
-Do not install `kingofsnake`. Instead:
-
-1. Generate a repo [from this template].
-1. Open a [terminal] and `cd` to this folder.
-1. Run `./kitchen` to see available commands.
-
-The `kitchen` script defines [shell functions] for common Docker commands.
-
-[from this template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
-[terminal]: https://en.wikipedia.org/wiki/Command-line_interface
-[shell functions]: https://www.gnu.org/software/bash/manual/html_node/Shell-Functions.html
+Generate a new repo [from this template].
 
 ### bake an image
 
+1. Open a [terminal] and `cd` to this folder.
 1. Edit the `Dockerfile` to choose a Python version.
-1. Replace `requirements.txt` with your project's requirements.
+1. Edit `requirements.txt` to choose Python packages.
 1. Run `./kitchen bake` to build a `kingofsnake:latest` image.
 1. Run `./kitchen freeze` to update `requirements.txt` and rebuild.
 
-Building a new image takes a few minutes.
-Rebuilding is much faster unless requirements have changed.
+Baking a new image takes a few minutes. Rebuilding is much faster.
 
-### serve Jupyter
+### serve jupyter
 
+1. Open a [terminal] and `cd` to this folder.
 1. Run `./kitchen serve` to start a [Jupyter server].
-1. Open a browser and enter `localhost:8888` in the address bar.
-1. To stop Jupyter, click on the terminal running it and press *CTRL-C*.
+1. Open a web browser and enter `localhost:8888` in the address bar.
 
-The `serve` command [mounts] some folders so Jupyter can access them:
+The `serve` command [mounts] some folders.
+These folders will be created if they do not exist:
 
 - `~/.ipython` as `/home/kos/.ipython`
 - `~/.jupyter` as `/home/kos/.jupyter`
 - current folder as `/context`
 
-The `~/.ipython` and `~/.jupyter` folders will be created if they do not exist.
-
-[Jupyter server]: https://jupyter-notebook.readthedocs.io/en/stable/public_server.html
-[mounts]: https://docs.docker.com/storage/bind-mounts/
-
-### secure Jupyter
-
-Jupyter may ask you to [copypaste a token] and [create a password].
+Jupyter might ask you to [copypaste a token] and/or [create a password].
 It saves the password to:
 ```sh
 ~/.jupyter/jupyter_notebook_config.json
 ```
-If this file contains a password, then Jupyter will ask for it when you run `serve`.
 
-The `serve` command [publishes] port 8888.
-Jupyter and anything else inside the container can access this port.
-Inside containers, other ports are protected by a [firewall].
+The `serve` command [publishes] port 8888. Other ports are restricted by a [firewall].
 
+### delete everything
+
+1. Open a [terminal] and `cd` to this folder.
+1. `./kitchen clean` stops and deletes all `kingofsnake` containers.
+1. `./kitchen eightysix` deletes the `kingofsnake:latest` image.
+
+Cleaning is usually not necessary because `kingofsnake` containers [self-destruct].
+
+[from this template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
+[terminal]: https://en.wikipedia.org/wiki/Command-line_interface
+[Jupyter server]: https://jupyter-notebook.readthedocs.io/en/stable/public_server.html
+[mounts]: https://docs.docker.com/storage/bind-mounts/
 [copypaste a token]: https://jupyter-notebook.readthedocs.io/en/stable/security.html#
 [create a password]: https://jupyter-notebook.readthedocs.io/en/stable/public_server.html
 [publishes]: https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose
 [firewall]: https://docs.docker.com/v17.12/config/containers/container-networking/
-
-### run as root
-
-The `serve` command runs as user `kos`. To run commands as [root]:
-
-1. Run `./kitchen runit` to enter an interactive container.
-1. Press *CTRL-D* to exit the container.
-
-The `runit` command does not mount folders, publish ports, or start Jupyter.
-
-[root]: https://en.wikipedia.org/wiki/Superuser
-
-### delete everything
-
-When in doubt, [nuke it from orbit] and start over.
-
-1. Run `./kitchen clean` to stop and delete all `kingofsnake` containers.
-1. Run `./kitchen eightysix` to delete the `kingofsnake` image.
-
-Cleaning is often unnecessary because `kingofsnake` containers [self-destruct].
-
-[nuke it from orbit]: https://www.imdb.com/title/tt0090605/characters/nm0000244
 [self-destruct]: https://docs.docker.com/engine/reference/run/#clean-up---rm
 
 ## contents
 
 ### books
 
-Example Jupyter notebooks.
+- [classify.ipynb](books/classify.ipynb) for supervised classification learning
+- [cluster.ipynb](books/cluster.ipynb) for unsupervised cluster detection
+- [graph.ipynb](books/graph.ipynb) for force-directed graph layout
+- [plot.ipynb](books/plot.ipynb) for plotting examples
 
 ### code
 
-Example [packages] for [APIs], [ETL], and visualization.
+- [graph.py](code/graph.py) for graph data
+- [learn.py](code/learn.py) for machine learning
+- [plot.py](code/plot.py) for [pandas] data visualization
+- [tools.py](code/tools.py) for convenience functions and constants
 
 ### data
 
-This folder is [gitignored] except for an example dataset from [Ergast].
+This folder is [gitignored] except for an example dataset from [data.ny.gov].
 
-[packages]: https://docs.python.org/3/tutorial/modules.html#packages
-[APIs]: https://en.wikipedia.org/wiki/Application_programming_interface
-[ETL]: https://en.wikipedia.org/wiki/Extract,_transform,_load
 [gitignored]: https://git-scm.com/docs/gitignore
-[Ergast]: http://ergast.com/mrd/db/
+[data.ny.gov]: https://data.ny.gov/Energy-Environment/Electric-Generation-By-Fuel-Type-GWh-Beginning-196/h4gs-8qnu
 
 ## dependencies
 
 1. Docker for [Linux] or [Mac] or [Windows].
 
-Python is not required.
-Windows users may need to edit the `kitchen` for [path compatibility].
+Python is not required. Windows users may need to edit `kitchen` for [path compatibility].
 
 [Linux]: https://docs.docker.com/install/
 [Mac]: https://docs.docker.com/docker-for-mac/install/
 [Windows]: https://docs.docker.com/docker-for-windows/
 [path compatibility]: https://en.wikipedia.org/wiki/Path_(computing)#MS-DOS/Microsoft_Windows_style
 
-
 ## examples
 
-Run Python as root inside a container.
+Show all available kitchen commands.
 ```sh
-./kitchen runit latest python
+./kitchen help
+```
+
+Run a container as [root] without Jupyter, folder mounts, or published ports.
+```sh
+./kitchen runit latest
 ```
 
 Bake another image called `kingofsnake:karl`, freeze it, and serve Jupyter.
@@ -163,9 +144,16 @@ Delete all traces of `kingofsnake:karl`.
 ./kitchen eightysix karl
 ```
 
+Load `kitchen` into the shell to avoid typing `./kitchen` repeatedly.
+```sh
+source kitchen
+```
+
+[root]: https://en.wikipedia.org/wiki/Superuser
+
 ## faq
 
-### I'm stuck in a container!
+### How do I make it stop?
 
 Click on the terminal running Jupyter and press *CTRL-C*.
 
@@ -183,5 +171,4 @@ Yes, but not with the `kitchen` script. See the [Docker run reference].
 
 ### Do I need all these notebooks and/or packages?
 
-No. Files in the `books`, `code`, and `data` folders are examples.
-Delete them if you want to.
+No. Delete them if you want to. The `kitchen` script does not require them.
