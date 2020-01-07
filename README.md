@@ -90,17 +90,18 @@ Cleaning is usually not necessary because `kingofsnake` containers [self-destruc
 
 ### books
 
-- [classify.ipynb](books/classify.ipynb) for supervised classification learning
-- [cluster.ipynb](books/cluster.ipynb) for unsupervised cluster detection
-- [graph.ipynb](books/graph.ipynb) for force-directed graph layout
-- [plot.ipynb](books/plot.ipynb) for plotting examples
+- [classify.ipynb](books/classify.ipynb) supervised classification
+- [cluster.ipynb](books/cluster.ipynb) unsupervised clustering
+- [graph.ipynb](books/graph.ipynb) graph data and layout
+- [iris.ipynb](books/iris.ipynb) data normalization
+- [plot.ipynb](books/plot.ipynb) data visualization
 
 ### code
 
-- [graph.py](code/graph.py) for graph data
-- [learn.py](code/learn.py) for machine learning
-- [plot.py](code/plot.py) for [pandas] data visualization
-- [tools.py](code/tools.py) for convenience functions and constants
+- [graph.py](code/graph.py) graph data and layout
+- [learn.py](code/learn.py) machine learning
+- [plot.py](code/plot.py) data visualization
+- [tools.py](code/tools.py) constants and functions
 
 ### data
 

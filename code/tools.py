@@ -22,10 +22,8 @@ def irisdata():
     data = load_iris()
     cols = [x.rstrip("(cm)").strip().replace(" ", "_") for x in data.feature_names]
     cats = Categorical.from_codes(data.target, data.target_names)
-    data = DataFrame(data.data, columns=cols)
-    data.insert(0, "species", cats)
 
-    return data
+    return DataFrame(data.data, columns=cols).assign(species = cats)
 
 
 def schema(data):
