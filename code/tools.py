@@ -14,7 +14,7 @@ DATADIR = REPO / "data"
 
 def afew(data, n=5):
     """ DataFrame view: Select random rows from input DataFrame. """
-    return data.loc[random.choice(data.index, 5)]
+    return data.loc[random.choice(data.index, n)]
 
 
 def irisdata():
