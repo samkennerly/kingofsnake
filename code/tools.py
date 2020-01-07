@@ -4,11 +4,8 @@ Constants and utility functions.
 from pathlib import Path
 
 from numpy import random
-from pandas import Categorical, DataFrame, Series, read_csv
+from pandas import Categorical, DataFrame, Series, crosstab, read_csv, to_datetime
 from sklearn.datasets import load_iris
-
-from graph import Graph
-from plot import Plot
 
 
 REPO = Path(__file__).resolve().parent.parent
@@ -20,7 +17,7 @@ def afew(data, n=5):
     return data.loc[random.choice(data.index, 5)]
 
 
-def iris():
+def irisdata():
     """ DataFrame: Fisher's iris dataset with covfefe removed. """
     data = load_iris()
     cols = [x.rstrip("(cm)").strip().replace(" ", "_") for x in data.feature_names]
