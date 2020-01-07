@@ -4,12 +4,12 @@ Analyze data without installing multiple Pythons.
 
 <img alt="poster" src="kingofsnake.jpeg" title="Asps. Very dangerous.">
 
-This template is intended for [research] code.
-For a [production] template, see [pydiner].
+Includes examples of [classification], [clustering], [graph layout], and [plotting].
 
-[research]: https://knowyourmeme.com/photos/234739-i-have-no-idea-what-im-doing
-[production]: https://en.wikipedia.org/wiki/Deployment_environment
-[pydiner]: https://github.com/samkennerly/pydiner/
+[classification]: books/classify.ipynb
+[clustering]: books/cluster.ipynb
+[graph layout]: books/graph.ipynb
+[plotting]: books/plot.ipynb
 
 ## abstract
 
@@ -20,7 +20,7 @@ For a [production] template, see [pydiner].
 - never conflicts with system Python(s), [Anaconda], or [virtualenvs].
 - updates `requirements.txt` with [pinned versions] of all [pip] installs.
 
-Example [modules] for graph data, machine learning, and plotting are included.
+This template is for [research]. For production code, see [pydiner].
 
 [template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [reproducible]: https://en.wikipedia.org/wiki/Replication_crisis
@@ -32,6 +32,8 @@ Example [modules] for graph data, machine learning, and plotting are included.
 [pinned versions]: https://pip.pypa.io/en/stable/user_guide/#pinned-version-numbers
 [pip]: https://pip.pypa.io/en/stable/
 [modules]: https://docs.python.org/3/tutorial/modules.html
+[research]: https://knowyourmeme.com/photos/234739-i-have-no-idea-what-im-doing
+[pydiner]: https://github.com/samkennerly/pydiner/
 
 ## basics
 
@@ -170,6 +172,6 @@ Yes, but not with the `kitchen` script. See the [Docker run reference].
 
 [Docker run reference]: https://docs.docker.com/engine/reference/run/
 
-### Do I need all these notebooks and/or packages?
+### Do I need all these notebooks and modules?
 
 No. Delete them if you want to. The `kitchen` script does not require them.
