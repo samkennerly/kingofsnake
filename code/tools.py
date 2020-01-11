@@ -26,11 +26,6 @@ def irisdata():
     return DataFrame(data.data, columns=cols).assign(species=cats)
 
 
-def schema(data):
-    """ DataFrame: Types and null counts for input DataFrame. """
-    return DataFrame({"dtype": data.dtypes, "nulls": data.isnull().sum()})
-
-
 def zscores(data, robust=False):
     """ DataFrame: Data with each column standardized. """
     data = DataFrame(data).copy()
