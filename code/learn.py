@@ -115,6 +115,7 @@ class Cluster:
         """ List[int]: Row numbers for the original input data. """
         return list(range(1 + len(self.links)))
 
+
 # Copyright © 2020 Sam Kennerly
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
