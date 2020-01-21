@@ -2,7 +2,10 @@
 
 Analyze data without installing multiple Pythons.
 
-<img alt="poster" src="kingofsnake.jpeg" title="Asps. Very dangerous.">
+<img
+  alt="snakepit"
+  src="https://raw.githubusercontent.com/samkennerly/posters/master/kingofsnake.jpeg"
+  title="Asps. Very dangerous.">
 
 Includes examples of [classification], [clustering], [graph layout], and [plotting].
 
