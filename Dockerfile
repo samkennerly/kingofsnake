@@ -1,4 +1,4 @@
-FROM python:3.7.6
+FROM python:3.8.2
 LABEL description="Python science laboratory"
 LABEL maintainer="samkennerly@gmail.com"
 
@@ -6,7 +6,10 @@ LABEL maintainer="samkennerly@gmail.com"
 RUN apt-get -y update && apt-get -y install cmake gcc less tree
 
 # Install major stack components
-RUN pip install --upgrade pip && pip install notebook==6.0 pandas==1.0 scipy==1.4
+RUN pip install --upgrade pip && pip install \
+    notebook==6.0.3 \
+    pandas==1.0.1 \
+    scipy==1.4.1
 
 # Install other Python packages
 COPY requirements.txt /tmp
