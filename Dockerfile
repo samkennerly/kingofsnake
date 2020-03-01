@@ -6,7 +6,7 @@ LABEL maintainer="samkennerly@gmail.com"
 RUN apt-get -y update && apt-get -y install cmake gcc less tree
 
 # Install major stack components
-RUN pip install --upgrade pip && pip install notebook==6.0 pandas==0.25 scipy==1.4
+RUN pip install --upgrade pip && pip install notebook==6.0 pandas==1.0 scipy==1.4
 
 # Install other Python packages
 COPY requirements.txt /tmp
