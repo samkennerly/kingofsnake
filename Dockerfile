@@ -1,14 +1,14 @@
-FROM python:3.7.5
+FROM python:3.7.6
 LABEL description="Python science laboratory"
 LABEL maintainer="samkennerly@gmail.com"
 
 # Install system packages
 RUN apt-get -y update && apt-get -y install cmake gcc less tree
 
-# Install core Python packages
-RUN pip install --upgrade pip && pip install jupyter==1.0.0 scipy==1.3.3
+# Install major stack components
+RUN pip install --upgrade pip && pip install notebook==6.0 pandas==0.25 scipy==1.4
 
-# Install extra Python packages
+# Install other Python packages
 COPY requirements.txt /tmp
 RUN pip install --upgrade pip && pip install --requirement /tmp/requirements.txt
 
