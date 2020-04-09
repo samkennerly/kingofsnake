@@ -5,13 +5,7 @@ LABEL maintainer="samkennerly@gmail.com"
 # Install system packages
 RUN apt-get -y update && apt-get -y install cmake gcc less tree
 
-# Install major stack components
-RUN pip install --upgrade pip && pip install \
-    notebook==6.0.3 \
-    pandas==1.0.1 \
-    scipy==1.4.1
-
-# Install other Python packages
+# Install Python packages
 COPY requirements.txt /tmp
 RUN pip install --upgrade pip && pip install --requirement /tmp/requirements.txt
 
