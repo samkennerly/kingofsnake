@@ -199,7 +199,10 @@ class Plot:
     # Timeseries input
 
     def quant(self, ts, freq, q=(), **kwargs):
-        """ AxesSubplot: Contour plot of quantiles per period. """
+        """
+        AxesSubplot: Contour plot of quantiles per period.
+        Input must be a Series with a datetime-like index.
+        """
         kwargs.setdefault("color", list("krygbck"))
         kwargs.setdefault("grid", True)
         kwargs.setdefault("legend", True)
@@ -214,7 +217,7 @@ class Plot:
     # SciPy linkage matrix input
 
     def linkage(self, links, p=0, **kwargs):
-        """ AxesSubplot: SciPy dendrogram of a cluster linkage matrix. """
+        """ AxesSubplot: SciPy dendrogram. Input must be a cluster linkage matrix. """
         axes = self.axes()
 
         axes.set_title(kwargs.pop("title", None))
