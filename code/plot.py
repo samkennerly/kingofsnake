@@ -21,22 +21,32 @@ LEGEND = (
     ("borderaxespad", 0.0),
     ("loc", "upper left"),
 )
+STYLE = "bmh"
 
 
 class Plot:
     """
-    Plot maker for pandas.DataFrame or .Series inputs.
+    Visualize pandas.DataFrame or .Series inputs.
+
+    Each Plot() object remembers its own default parameters.
+    Most methods are thin wrappers around DataFrame plot methods.
+    Call a Plot() to call to DataFrame.plot() with custom arguments.
+
+    Caution: Modifies matplotlib.style when an object is created.
     """
 
     styles = mpstyle.available
 
-    def __init__(self, style="bmh", **kwargs):
+    def __init__(self, style=STYLE, **kwargs):
         mpstyle.use(style)
 
         self.params = dict()
         self.params["axes"] = {k: kwargs.pop(k, v) for k, v in AXES}
         self.params["figure"] = {k: kwargs.pop(k, v) for k, v in FIGURE}
         self.params["legend"] = {k: kwargs.pop(k, v) for k, v in LEGEND}
+
+        if kwargs:
+            raise KeyError(f"unknown keyword arguments {sorted(kwargs)}")
 
     def __call__(self, data, **kwargs):
         axes, params = self.axes, self.params
@@ -60,6 +70,7 @@ class Plot:
         return f"{type(self).__name__}({self.params})"
 
     def axes(self):
+        """ AxesSubplot: Create blank axes. """
         return figure(**self.params["figure"]).add_subplot(**self.params["axes"])
 
     # DataFrame input
