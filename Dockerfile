@@ -1,4 +1,4 @@
-FROM python:3.8.2
+FROM python:3.11.6
 LABEL description="Python science laboratory"
 LABEL maintainer="samkennerly@gmail.com"
 
