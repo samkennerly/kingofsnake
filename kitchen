@@ -6,14 +6,14 @@ HELPMSG=$(cat <<-END
 Build a Docker image and run disposable containers.
 
 COMMANDS
-bake [TAG]              Build $PROJECT:TAG image from $CONTEXT
+bake [TAG]              Build $PROJECT:TAG image
 clean                   Delete all $PROJECT containers and Docker leftovers
 debug TAG SCRIPT [ARGS] Debug Python SCRIPT in a $PROJECT:TAG container
 eightysix [TAG]         Delete $PROJECT:TAG containers, image, and leftovers
 freeze [TAG]            Update requirements.txt and rebuild $PROJECT:TAG
 menu                    Show all available Docker objects
 runit [TAG] [CMD]       Run CMD in an interactive $PROJECT:TAG container
-serve [TAG]             Serve Jupyter in a $PROJECT:TAG container with mounted folders
+serve [TAG]             Serve Jupyter in a container with $CONTEXT mounted as /context
 
 DEFAULTS
 TAG 'latest'
@@ -23,7 +23,6 @@ EXAMPLES
 ./kitchen bake monty
 ./kitchen freeze monty
 ./kitchen serve monty
-./kitchen serve monty python -m test
 END
 )
 
