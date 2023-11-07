@@ -24,3 +24,5 @@ __pycache__/
 .ipynb_checkpoints/
 jupyter_notebook_config.*
 jupyter_server_config.*
+/etc/ipython
+/etc/jupyter
