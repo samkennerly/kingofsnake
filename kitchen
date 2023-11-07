@@ -58,10 +58,10 @@ runit() {
 }
 serve() {
   docker run --rm  --publish "127.0.0.1:8888:8888" --user 'kos' \
-    --volume "$HOME/.ipython:/home/kos/.ipython" \
-    --volume "$HOME/.jupyter:/home/kos/.jupyter" \
-    --hostname "${PROJECT}" \
+    --volume "${CONTEXT}/etc/ipython:/home/kos/.ipython" \
+    --volume "${CONTEXT}/etc/jupyter:/home/kos/.jupyter" \
     --volume "${CONTEXT}:/context:delegated" \
+    --hostname "${PROJECT}" \
     "$PROJECT:${1:-latest}" \
     jupyter notebook --no-browser --ip=0.0.0.0 --port=8888
 }
