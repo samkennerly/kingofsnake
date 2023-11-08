@@ -1,5 +1,5 @@
 """
-Constants and utility functions.
+Constants and convenience functions.
 """
 from pathlib import Path
 
@@ -13,12 +13,12 @@ DATADIR = REPO / "data"
 
 
 def afew(data, n=5):
-    """ DataFrame view: Select random rows from input DataFrame. """
+    """ DataFrame view: Random rows chosen from a DataFrame. """
     return data.loc[random.choice(data.index, n)]
 
 
 def irisdata():
-    """ DataFrame: Fisher's iris dataset with covfefe removed. """
+    """ DataFrame: Fisher's iris dataset from scikit-learn. """
     data = load_iris()
     cols = [x.rstrip("(cm)").strip().replace(" ", "_") for x in data.feature_names]
     cats = Categorical.from_codes(data.target, data.target_names)
@@ -36,7 +36,7 @@ def zscores(data, robust=False):
     return data
 
 
-# Copyright © 2020 Sam Kennerly
+# Copyright © 2023 Sam Kennerly
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
