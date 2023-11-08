@@ -31,7 +31,7 @@ def zscores(data, robust=False):
     data = DataFrame(data).copy()
     for col in data.columns:
         data[col] -= data[col].median() if robust else data[col].mean()
-        data[col] /= data[col].mad() if robust else data[col].std()
+        data[col] /= data[col].abs().mean() if robust else data[col].std()
 
     return data
 
