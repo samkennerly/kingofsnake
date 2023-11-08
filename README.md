@@ -69,7 +69,7 @@ This will start Jupyter in a [container], [publish port] 8888, and [mount] some 
 - `etc/ipython` is mounted as `/home/kos/.ipython`
 - `etc/jupyter` is mounted as `/home/kos/.jupyter`
 
-On the first run, Jupyter might ask you to [copypaste a token] and/or [create a password]. It will save the hashed password and any custom settings to `etc/ipython` and `etc/jupyter` in this repo. If the folders do not exist, they will be created automatically. Git will [ignore] the contents of both folders.
+On the first run, Jupyter might ask you to [copypaste a token] and create a password. It will save the hashed password and any custom settings to `etc/ipython` and `etc/jupyter` in this repo. If the folders do not exist, they will be created automatically. Git will [ignore] the contents of both folders.
 
 ### delete everything and start over
 
@@ -86,8 +86,7 @@ The `clean` is usually unnecessary because `kingofsnake` containers [self-destru
 [container]: https://docs.docker.com/engine/reference/run/
 [publish port]: https://docs.docker.com/network/
 [mount]: https://docs.docker.com/storage/bind-mounts/
-[copypaste a token]: https://jupyter-notebook.readthedocs.io/en/stable/security.html#
-[create a password]: https://jupyter-notebook.readthedocs.io/en/stable/public_server.html
+[copypaste a token]: https://jupyter-server.readthedocs.io/en/stable/operators/security.html
 [ignore]: https://git-scm.com/docs/gitignore
 [from this template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [self-destruct]: https://docs.docker.com/engine/reference/run/#clean-up---rm
@@ -98,25 +97,36 @@ The `clean` is usually unnecessary because `kingofsnake` containers [self-destru
 
 The [books] folder contains example notebooks:
 
-- [classify.ipynb](books/classify.ipynb) supervised classification
-- [cluster.ipynb](books/cluster.ipynb) unsupervised clustering
-- [graph.ipynb](books/graph.ipynb) graph data and layout
-- [iris.ipynb](books/iris.ipynb) data normalization
-- [plot.ipynb](books/plot.ipynb) data visualization
+- [classify.ipynb] supervised classification
+- [cluster.ipynb] unsupervised clustering
+- [graph.ipynb] graph data and layout
+- [iris.ipynb] data normalization
+- [plot.ipynb] data visualization
 
 ### code
 
 The [code] folder contains importable Python [modules]:
 
-- [graph.py](code/graph.py) graph data and layout
-- [learn.py](code/learn.py) machine learning
-- [plot.py](code/plot.py) data visualization
-- [tools.py](code/tools.py) constants and functions
+- [graph.py] graph data and layout
+- [learn.py] machine learning
+- [plot.py] data visualization
+- [tools.py] constants and functions
 
 ### data
 
 This folder is for storing data files. Git [ignores] it except for one example dataset from [data.ny.gov].
 
+[books]: books
+[classify.ipynb]: books/classify.ipynb
+[cluster.ipynb]: books/cluster.ipynb
+[graph.ipynb]: books/graph.ipynb
+[iris.ipynb]: books/iris.ipynb
+[plot.ipynb]: books/plot.ipynb
+[code]: code
+[graph.py]: code/graph.py
+[learn.py]: code/learn.py
+[plot.py]: code/plot.py
+[tools.py]: code/tools.py
 [ignores]: https://git-scm.com/docs/gitignore
 [data.ny.gov]: https://data.ny.gov/Energy-Environment/Electric-Generation-By-Fuel-Type-GWh-Beginning-196/h4gs-8qnu
 
