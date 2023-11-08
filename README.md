@@ -51,17 +51,13 @@ Generate a new repo [from this template].
 
 ### bake a python environment
 
-Use the [kitchen] shell script to build a [Docker image]:
-
 1. Open a [terminal] and `cd` to this folder.
 1. Edit the `Dockerfile` to choose a Python version.
 1. Edit `requirements.txt` to choose Python packages.
-1. Run `./kitchen bake` to build a `kingofsnake:latest` image.
+1. Run `./kitchen bake` to build a `kingofsnake:latest` [image].
 1. Run `./kitchen freeze` to update `requirements.txt` and rebuild.
 
 ### serve jupyter noteboks
-
-Start a [Jupyter server] in a container:
 
 1. Open a [terminal] and `cd` to this folder.
 1. Run `./kitchen serve` to start a [Jupyter server].
@@ -84,10 +80,9 @@ On the first run, Jupyter might ask you to [copypaste a token] and/or [create a 
 The `clean` is usually unnecessary because `kingofsnake` containers [self-destruct].
 
 [from this template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
-[kitchen]: kitchen
-[Docker image]: https://docs.docker.com/engine/reference/commandline/images/
+[image]: https://docs.docker.com/engine/reference/commandline/images/
 [terminal]: https://en.wikipedia.org/wiki/Command-line_interface
-[Jupyter server]: https://jupyter-notebook.readthedocs.io/en/stable/public_server.html
+[Jupyter server]: https://jupyter-server.readthedocs.io/en/latest/index.html
 [container]: https://docs.docker.com/engine/reference/run/
 [publish port]: https://docs.docker.com/network/
 [mount]: https://docs.docker.com/storage/bind-mounts/
