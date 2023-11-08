@@ -136,11 +136,12 @@ This folder is for storing data files. Git [ignores] it except for one example d
 
 1. Docker for [Linux] or [Mac] or [Windows].
 
-Windows users may need to edit `kitchen` for [path compatibility].
+Windows users may need to edit the [kitchen] script for [path compatibility].
 
 [Linux]: https://docs.docker.com/install/
 [Mac]: https://docs.docker.com/docker-for-mac/install/
 [Windows]: https://docs.docker.com/docker-for-windows/
+[kitchen]: kitchen
 [path compatibility]: https://en.wikipedia.org/wiki/Path_(computing)#MS-DOS/Microsoft_Windows_style
 
 ## examples
@@ -178,11 +179,12 @@ Click on the terminal running Jupyter and press *CTRL-C*.
 
 ### Can I run Jupyter in the background?
 
-Yes, but not with the `kitchen` script. See the [Docker run reference].
+Yes, but not with the [kitchen] script. See the [Docker run reference].
 
 ### Do I need all these notebooks and modules?
 
 No. Delete them if you want to. Jupyter does not need them.
 
 [template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
+[kitchen]: kitchen
 [Docker run reference]: https://docs.docker.com/engine/reference/run/
