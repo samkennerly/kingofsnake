@@ -102,17 +102,17 @@ The [books] folder contains example notebooks:
 - [classify.ipynb] supervised classification
 - [cluster.ipynb] unsupervised clustering
 - [graph.ipynb] graph data and layout
-- [iris.ipynb] data normalization
+- [normalize.ipynb] data normalization
 - [plot.ipynb] data visualization
 
 ### code
 
-The [code] folder contains importable Python [modules]:
+The [code] folder contains example Python [modules]:
 
 - [graph.py] graph data and layout
 - [learn.py] machine learning
 - [plot.py] data visualization
-- [tools.py] constants and functions
+- [tools.py] constants and convenience functions
 
 ### data
 
@@ -122,7 +122,7 @@ This folder is for storing data files. Git [ignores] it except for one example d
 [classify.ipynb]: books/classify.ipynb
 [cluster.ipynb]: books/cluster.ipynb
 [graph.ipynb]: books/graph.ipynb
-[iris.ipynb]: books/iris.ipynb
+[normalize.ipynb]: books/normalize.ipynb
 [plot.ipynb]: books/plot.ipynb
 [code]: code
 [graph.py]: code/graph.py
