@@ -63,13 +63,15 @@ Generate a new repo [from this template].
 1. Run `./kitchen serve` to start a [Jupyter server].
 1. Open a web browser and enter `localhost:8888` in the address bar.
 
-This will start Jupyter in a [container], [publish port] 8888, and [mount] some folders:
+This runs Jupyter in a [container], [publishes] port 8888, and [mounts] some folders from this repo:
 
-- the `kingofsnake` repo is mounted as `/context`
 - `etc/ipython` is mounted as `/home/kos/.ipython`
 - `etc/jupyter` is mounted as `/home/kos/.jupyter`
+- [books](books) is mounted as `/home/kos/books`
+- [code](code) is mounted as `/home/kos/code`
+- [data](data) is mounted as `/home/kos/data`
 
-On the first run, Jupyter might ask you to [copypaste a token] and create a password. It will save the hashed password and any custom settings to `etc/ipython` and `etc/jupyter` in this repo. If the folders do not exist, they will be created automatically. Git will [ignore] the contents of both folders.
+On the first run, Jupyter might ask you to [copypaste a token] and create a password. It will save the hashed password and any custom settings to `etc/ipython` and `etc/jupyter` in this repo. If those folders do not exist, they will be created automatically. Git [ignores] the contents of both folders.
 
 ### delete everything and start over
 
@@ -84,10 +86,10 @@ The `clean` is usually unnecessary because `kingofsnake` containers [self-destru
 [terminal]: https://en.wikipedia.org/wiki/Command-line_interface
 [Jupyter server]: https://jupyter-server.readthedocs.io/en/latest/index.html
 [container]: https://docs.docker.com/engine/reference/run/
-[publish port]: https://docs.docker.com/network/
-[mount]: https://docs.docker.com/storage/bind-mounts/
+[publishes]: https://docs.docker.com/network/
+[mounts]: https://docs.docker.com/storage/bind-mounts/
 [copypaste a token]: https://jupyter-server.readthedocs.io/en/stable/operators/security.html
-[ignore]: https://git-scm.com/docs/gitignore
+[ignores]: https://git-scm.com/docs/gitignore
 [from this template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [self-destruct]: https://docs.docker.com/engine/reference/run/#clean-up---rm
 

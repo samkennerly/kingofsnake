@@ -11,7 +11,7 @@ RUN pip install --upgrade pip && pip install --requirement /tmp/requirements.txt
 
 # Create user and context folder
 RUN useradd --create-home kos
-ENV PYTHONPATH=/context/code
-WORKDIR /context
+ENV PYTHONPATH=/home/kos/code
+WORKDIR /home/kos
 
 CMD ["/bin/bash"]
