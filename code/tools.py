@@ -13,8 +13,18 @@ DATADIR = REPO / "data"
 
 
 def afew(data, n=5):
-    """ DataFrame view: Random rows chosen from a DataFrame. """
-    return data.loc[random.choice(data.index, n)]
+    """ DataFrame view: Distinct random rows from a DataFrame. """
+    return data.loc[random.choice(data.index, size=n, replace=False)]
+
+
+def datasplit(data, nrows=0):
+    """ (DataFrame, DataFrame): Partition rows into 2 disjoint DataFrames. """
+    nrows = nrows or len(data) // 2
+
+    trainrows = afew(data, nrows).sort_index()
+    testrows = data.drop(index = trainrows.index)
+
+    return trainrows, testrows
 
 
 def irisdata():
