@@ -70,19 +70,19 @@ class Plot:
         return f"{type(self).__name__}({self.params})"
 
     def axes(self):
-        """ AxesSubplot: Create blank axes. """
+        """AxesSubplot: Create blank axes."""
         return figure(**self.params["figure"]).add_subplot(**self.params["axes"])
 
     # DataFrame input
 
     def area(self, data, **kwargs):
-        """ AxesSubplot: Area plot for each column. """
+        """AxesSubplot: Area plot for each column."""
         kwargs.setdefault("legend", True)
 
         return self(data, kind="area", **kwargs)
 
     def bar(self, data, **kwargs):
-        """ AxesSubplot: Bar plot for each column. """
+        """AxesSubplot: Bar plot for each column."""
         kwargs.setdefault("legend", True)
         kwargs.setdefault("rot", 90)
         kwargs.setdefault("stacked", True)
@@ -91,7 +91,7 @@ class Plot:
         return self(data, kind="bar", **kwargs)
 
     def barh(self, data, **kwargs):
-        """ AxesSubplot: Horizontal bar plot for each column. """
+        """AxesSubplot: Horizontal bar plot for each column."""
         kwargs.setdefault("legend", True)
         kwargs.setdefault("stacked", True)
         kwargs.setdefault("width", 0.8)
@@ -99,27 +99,27 @@ class Plot:
         return self(data.iloc[::-1, :], kind="barh", **kwargs)
 
     def box(self, data, **kwargs):
-        """ AxesSubplot: Box plot for each column. """
+        """AxesSubplot: Box plot for each column."""
         kwargs.setdefault("grid", True)
         kwargs.setdefault("rot", 90)
 
         return self(data, kind="box", **kwargs)
 
     def boxh(self, data, **kwargs):
-        """ AxesSubplot: Horizontal box plot for each column. """
+        """AxesSubplot: Horizontal box plot for each column."""
         kwargs.setdefault("grid", True)
 
         return self(data.iloc[:, ::-1], kind="box", vert=False, **kwargs)
 
     def density(self, data, **kwargs):
-        """ AxesSubplot: Probability density estimate for each column. """
+        """AxesSubplot: Probability density estimate for each column."""
         kwargs.setdefault("grid", True)
         kwargs.setdefault("legend", True)
 
         return self(data, kind="density", **kwargs)
 
     def heat(self, data, **kwargs):
-        """ AxesSubplot: Heatmap with same rows and columns as input. """
+        """AxesSubplot: Heatmap with same rows and columns as input."""
         axes = self.axes
 
         kwargs.setdefault("alpha", 0.707)
@@ -152,14 +152,14 @@ class Plot:
         return axes
 
     def hexbin(self, data, **kwargs):
-        """ AxesSubplot: Scatterplot with hexagonal bins. """
+        """AxesSubplot: Scatterplot with hexagonal bins."""
         kwargs.setdefault("cmap", "cubehelix")
         kwargs.setdefault("colorbar", False)
 
         raise NotImplementedError
 
     def hist(self, data, **kwargs):
-        """ AxesSubplot: Histogram for each column. """
+        """AxesSubplot: Histogram for each column."""
         kwargs.setdefault("bins", 33)
         kwargs.setdefault("grid", True)
         kwargs.setdefault("legend", True)
@@ -168,7 +168,7 @@ class Plot:
         return self(data, kind="hist", **kwargs)
 
     def line(self, data, **kwargs):
-        """ AxesSubplot: Line plot for each column. """
+        """AxesSubplot: Line plot for each column."""
         kwargs.setdefault("grid", True)
         kwargs.setdefault("legend", True)
 
@@ -217,7 +217,7 @@ class Plot:
     # SciPy linkage matrix input
 
     def linkage(self, links, p=0, **kwargs):
-        """ AxesSubplot: SciPy dendrogram. Input must be a cluster linkage matrix. """
+        """AxesSubplot: SciPy dendrogram. Input must be a cluster linkage matrix."""
         axes = self.axes()
 
         axes.set_title(kwargs.pop("title", None))

@@ -10,7 +10,7 @@ from scipy.sparse.csgraph import laplacian
 
 
 def limited(z, maxr):
-    """ ndarray: Array with magnitudes smoothly compressed to <= 1. """
+    """ndarray: Array with magnitudes smoothly compressed to <= 1."""
     rad = abs(z).clip(1e-9, None)
     rad = tanh(rad) / rad
     rad *= maxr
@@ -19,7 +19,7 @@ def limited(z, maxr):
 
 
 def weighted(links):
-    """ DataFrame: [source, target, weight] for each link. """
+    """DataFrame: [source, target, weight] for each link."""
     links = DataFrame(links)
 
     cols = list(links.columns)
@@ -88,7 +88,7 @@ class Graph:
         return f"{type(self).__name__} with {len(self)} links\n{self.links}"
 
     def frame(self, steps=120):
-        """ DataFrame: Finished graph layout. Intermediate steps are discarded. """
+        """DataFrame: Finished graph layout. Intermediate steps are discarded."""
         nodes = self.nodes
         for x, y in self(steps):
             pass
@@ -97,7 +97,7 @@ class Graph:
 
     @property
     def matrix(self):
-        """ scipy.sparse.coo: Sparse adjacency matrix. """
+        """scipy.sparse.coo: Sparse adjacency matrix."""
         links, nodes = self.links, self.nodes
 
         i = links["source"].cat.codes.values
@@ -109,7 +109,7 @@ class Graph:
 
     @property
     def nodes(self):
-        """ Index: Sorted union of sources and targets. """
+        """Index: Sorted union of sources and targets."""
         return self.links["source"].cat.categories
 
 
