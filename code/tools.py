@@ -39,9 +39,11 @@ def irisdata():
 def zscores(data, robust=False):
     """ DataFrame: Data with each column standardized. """
     data = DataFrame(data).copy()
-    for col in data.columns:
-        data[col] -= data[col].median() if robust else data[col].mean()
-        data[col] /= data[col].abs().mean() if robust else data[col].std()
+    cols = data.select_dtypes('number').columns
+
+    for c in cols:
+        data[c] -= (data[c].median() if robust else data[c].mean())
+        data[c] /= (data[c].abs().mean() if robust else data[c].std())
 
     return data
 
