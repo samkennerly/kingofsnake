@@ -1,54 +1,64 @@
-from pandas import Categorical, DataFrame, Series
-from scipy.cluster.hierarchy import fcluster, linkage
+from pandas import Categorical, DataFrame, Index, Series
+from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
 
-class Cluster:
+class Hierarchy:
     """
-    Assign each row of a table to exactly one cluster.
-    Input numeric observations, then call to return a Series.
-    Each row of input matrix is assigned to exactly one cluster.
+    SciPy hierarchical clustering with pandas inputs and outputs.
+    Construct with a DataFrame. Non-numeric columns are ignored.
+    Call to return a Series assigning each row to a cluster.
 
     Constructor inputs:
-        data        DataFrame: Numeric columns with or without index.
-        **kwargs    are passed to scipy.cluster.hierarchy.linkage().
+        data        DataFrame: observations to use for training
+        **kwargs    are passed to scipy.cluster.hierarchy.linkage()
 
     Call inputs:
-        n           int: Maximum number of distinct clusters.
-        cats        optional Iterable: Category labels for clusters.
-        **kwargs    are passed to scipy.cluster.hierarchy.fcluster().
+        n           int: maximum number of distinct clusters
+        cats        optional Iterable: category labels for clusters
+        **kwargs    are passed to scipy.cluster.hierarchy.fcluster()
 
     See scipy.cluster.hierarchy docs for more information.
     """
 
     def __init__(self, data, **kwargs):
-        kwargs.setdefault("method", "average")
-        kwargs.setdefault("metric", "cosine")
-        data = DataFrame(data)
+        kwargs = {
+            "method": "average",
+            "metric": "cosine",
+            "optimal_ordering": False,
+            } | kwargs
 
-        links = linkage(data, **kwargs)
-        links = DataFrame(links, columns="a b distance count".split())
+        feats = data.select_dtypes("number")
+        links = DataFrame(linkage(feats, **kwargs))
+        links.columns = "left right distance count".split()
         for c in links.columns.drop("distance"):
             links[c] = links[c].astype(int)
 
+        self.features = feats.columns.tolist()
         self.links = links
+        self.params = kwargs
 
     def __call__(self, n, cats=(), **kwargs):
-        leaves, links = self.leaves, self.links
+        leaves = self.leaves
+        links = self.links
+        kwargs = {
+            "criterion": "maxclust",
+            "depth": 2,
+        } | kwargs
 
-        kwargs.setdefault("criterion", "maxclust")
         cluster = fcluster(links, n, **kwargs) - 1
-        if len(cats):
-            cluster = Categorical.from_codes(cluster, cats)
+        cluster = Series(cluster, index=leaves, name="cluster")
 
-        return Series(cluster, name="cluster")
+        return cluster
 
     def __len__(self):
         return len(self.links)
 
     def __repr__(self):
-        return f"{type(self).__name__} with {len(self)} links\n{self.links}"
+        return f"{type(self).__name__} with {len(self)} links"
 
     @property
     def leaves(self):
-        """ List[int]: Row numbers for the original input data. """
-        return list(range(1 + len(self.links)))
+        """ Index: Row numbers for the original input data. """
+        return Index(range(1 + len(self.links)))
 
+    def plot(self, **kwargs):
+        raise NotImplementedError
