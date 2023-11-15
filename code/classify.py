@@ -4,7 +4,7 @@ from sklearn import linear_model
 
 class Classifier:
     """
-    Use a scikit-learn classifier with pandas DataFrames.
+    Scikit-learn classifier with pandas inputs and outputs.
     Input training data to create and train a model.
     Call with new feature data to predict classes.
     Output is a Series with datatype 'category'.
