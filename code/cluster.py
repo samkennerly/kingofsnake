@@ -13,7 +13,6 @@ class Hierarchy:
 
     Call inputs:
         n           int: maximum number of distinct clusters
-        cats        optional Iterable: category labels for clusters
         **kwargs    are passed to scipy.cluster.hierarchy.fcluster()
 
     See scipy.cluster.hierarchy docs for more information.
@@ -36,7 +35,7 @@ class Hierarchy:
         self.links = links
         self.params = kwargs
 
-    def __call__(self, n, cats=(), **kwargs):
+    def __call__(self, n, **kwargs):
         leaves = self.leaves
         links = self.links
         kwargs = {
