@@ -1,3 +1,4 @@
+from matplotlib.pyplot import figure
 from pandas import Categorical, DataFrame, Index, Series
 from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
 
@@ -20,28 +21,26 @@ class Hierarchy:
 
     def __init__(self, data, **kwargs):
         kwargs = {
-            "method": "average",
+            "method": "weighted",
             "metric": "cosine",
             "optimal_ordering": False,
             } | kwargs
 
-        feats = data.select_dtypes("number")
-        links = DataFrame(linkage(feats, **kwargs))
+        data = data.select_dtypes("number")
+        links = DataFrame(linkage(data, **kwargs))
         links.columns = "left right distance count".split()
         for c in links.columns.drop("distance"):
             links[c] = links[c].astype(int)
 
-        self.features = feats.columns.tolist()
+        self.features = data.columns.copy()
+        self.leaves = data.index.copy()
         self.links = links
-        self.params = kwargs
 
     def __call__(self, n, **kwargs):
         leaves = self.leaves
         links = self.links
-        kwargs = {
-            "criterion": "maxclust",
-            "depth": 2,
-        } | kwargs
+
+        kwargs = { "criterion": "maxclust" } | kwargs
 
         cluster = fcluster(links, n, **kwargs) - 1
         cluster = Series(cluster, index=leaves, name="cluster")
@@ -49,15 +48,39 @@ class Hierarchy:
         return cluster
 
     def __len__(self):
-        return len(self.links)
+        return len(self.leaves)
 
     def __repr__(self):
-        return f"{type(self).__name__} with {len(self)} links"
+        return f"{type(self).__name__} with {len(self)} leaves"
 
-    @property
-    def leaves(self):
-        """ Index: Row numbers for the original input data. """
-        return Index(range(1 + len(self.links)))
+    def plot(self, n=0, figsize=None, **kwargs):
+        """
+        matplotlib Axes: Plot a tree of hierarchical clusters.
 
-    def plot(self, **kwargs):
-        raise NotImplementedError
+        Inputs
+            n           int: number of clusters to show
+            figsize     (int, int): size of matplotlib figure to create
+
+            **kwargs    are passed to scipy.cluster.hierarchy.dendrogram
+        """
+        leaves = self.leaves
+        links = self.links
+
+        n = int(n) or len(leaves)
+        kwargs = {
+            "color_threshold": 0.5,
+            "count_sort": False,
+            "labels": leaves,
+            "no_labels": False,
+            "orientation": "top",
+            "show_contracted": True,
+            "truncate_mode": "lastp",
+        } | kwargs
+
+        axes = figure(figsize=figsize).add_subplot()
+        axes.set_xlabel(f"cluster")
+        axes.set_ylabel("distance")
+
+        dendrogram(links, n, ax=axes, **kwargs)
+
+        return axes

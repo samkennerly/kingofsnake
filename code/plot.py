@@ -214,26 +214,6 @@ class Plot:
 
         return self(data, kind="line", **kwargs)
 
-    # SciPy linkage matrix input
-
-    def linkage(self, links, p=0, **kwargs):
-        """AxesSubplot: SciPy dendrogram. Input must be a cluster linkage matrix."""
-        axes = self.axes()
-
-        axes.set_title(kwargs.pop("title", None))
-        axes.set_xlabel(kwargs.pop("xlabel", None))
-        axes.set_ylabel(kwargs.pop("ylabel", "distance"))
-        kwargs.setdefault("color_threshold", 0.5)
-        kwargs.setdefault("count_sort", True)
-        kwargs.setdefault("labels", None)
-        kwargs.setdefault("no_labels", False)
-        kwargs.setdefault("orientation", "top")
-        kwargs.setdefault("truncate_mode", "lastp")
-
-        dendrogram(links, ax=axes, p=p, **kwargs)
-
-        return axes
-
 
 # Copyright © 2020 Sam Kennerly
 #
