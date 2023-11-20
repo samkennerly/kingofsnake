@@ -2,6 +2,7 @@ from matplotlib.pyplot import figure
 from pandas import Categorical, DataFrame, Index, Series
 from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
 
+
 class Hierarchy:
     """
     SciPy hierarchical clustering with pandas inputs and outputs.
@@ -24,7 +25,7 @@ class Hierarchy:
             "method": "weighted",
             "metric": "cosine",
             "optimal_ordering": False,
-            } | kwargs
+        } | kwargs
 
         data = data.select_dtypes("number")
         links = DataFrame(linkage(data, **kwargs))
@@ -40,7 +41,7 @@ class Hierarchy:
         leaves = self.leaves
         links = self.links
 
-        kwargs = { "criterion": "maxclust" } | kwargs
+        kwargs = {"criterion": "maxclust"} | kwargs
 
         cluster = fcluster(links, n, **kwargs) - 1
         cluster = Series(cluster, index=leaves, name="cluster")
