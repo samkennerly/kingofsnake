@@ -38,15 +38,17 @@ class Plot:
     styles = mpstyle.available
 
     def __init__(self, style=STYLE, **kwargs):
-        mpstyle.use(style)
-
-        self.params = dict()
-        self.params["axes"] = {k: kwargs.pop(k, v) for k, v in AXES}
-        self.params["figure"] = {k: kwargs.pop(k, v) for k, v in FIGURE}
-        self.params["legend"] = {k: kwargs.pop(k, v) for k, v in LEGEND}
-
+        kpop = kwargs.pop
+        params = dict()
+        params["axes"] = {k: kpop(k, v) for k, v in AXES}
+        params["figure"] = {k: kpop(k, v) for k, v in FIGURE}
+        params["legend"] = {k: kpop(k, v) for k, v in LEGEND}
         if kwargs:
             raise KeyError(f"unknown keyword arguments {sorted(kwargs)}")
+
+        mpstyle.use(style)
+
+        self.params = params
 
     def __call__(self, data, **kwargs):
         axes, params = self.axes, self.params
@@ -69,9 +71,13 @@ class Plot:
     def __repr__(self):
         return f"{type(self).__name__}({self.params})"
 
-    def axes(self):
+    def axes(self, **kwargs):
         """AxesSubplot: Create blank axes."""
-        return figure(**self.params["figure"]).add_subplot(**self.params["axes"])
+        return self.figure().add_subplot(**(self.params["axes"] | kwargs))
+
+    def figure(self, **kwargs):
+        """Figure: Create a new figure."""
+        return figure(**(self.params["figure"] | kwargs))
 
     # DataFrame input
 
