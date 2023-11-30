@@ -219,7 +219,6 @@ class Plotter:
         cols = data.columns
         kwargs = {
             "alpha": 0.707,
-            "cmap": "nipy_spectral_r",
             "colorbar": False,
             "grid": True,
             "legend": False,
