@@ -30,13 +30,14 @@ class Plotter:
 
     Modifing .style changes the global matplotlib style setting.
     """
+
     styles = mpstyle.available
 
     def __init__(self, style="bmh"):
         params = {
-            "axes": {k:v for k, v in AXES},
-            "figure": {k:v for k, v in FIGURE},
-            "legend": {k:v for k, v in LEGEND},
+            "axes": {k: v for k, v in AXES},
+            "figure": {k: v for k, v in FIGURE},
+            "legend": {k: v for k, v in LEGEND},
         }
 
         self.params = params
