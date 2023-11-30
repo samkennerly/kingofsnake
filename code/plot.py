@@ -1,6 +1,3 @@
-"""
-Data visualization toolbox.
-"""
 from matplotlib import style as mpstyle
 from matplotlib.pyplot import figure
 from pandas import DataFrame
@@ -25,10 +22,13 @@ LEGEND = (
 
 class Plotter:
     """
-    PANDAS plotting methods with personalized default parameters.
-    Most methods are thin wrappers around DataFrame plot methods.
+    Convenience class for plotting pandas DataFrame and Series data.
+    Each Plotter object stores parameters for matplotlib plots.
 
-    Calling a Plotter() calls DataFrame.plot() with custom arguments.
+    Call to call DataFrame.plot() with custom arguments.
+    This (and many other methods) returns an AxesSubplot.
+
+    Modifing .style changes the global matplotlib style setting.
     """
     styles = mpstyle.available
 
