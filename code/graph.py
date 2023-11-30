@@ -1,7 +1,3 @@
-"""
-Graph -> matrix converter and layout calculator.
-"""
-
 from numpy import fromiter, linspace, tanh
 from numpy.random import randn
 from pandas import Categorical, DataFrame
