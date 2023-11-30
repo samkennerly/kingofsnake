@@ -1,6 +1,7 @@
 import matplotlib.pyplot
 import matplotlib.style
 
+
 class Plotter:
     """
     Convenience class for plotting pandas DataFrame and Series data.
@@ -24,7 +25,7 @@ class Plotter:
                 "dpi": 100,
                 "edgecolor": None,
                 "facecolor": None,
-                "figsize": (10,5),
+                "figsize": (10, 5),
                 "frameon": False,
                 "tight_layout": True,
             },
@@ -38,7 +39,7 @@ class Plotter:
                 "legend": False,
                 "xlabel": None,
                 "ylabel": None,
-            }
+            },
         }
 
         self.params = params
@@ -211,7 +212,6 @@ class Plotter:
             "x": cols[0],
             "y": cols[1],
         } | kwargs
-
 
         ncols = len(cols)
         if ncols > 2:
