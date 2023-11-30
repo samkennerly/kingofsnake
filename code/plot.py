@@ -150,33 +150,31 @@ class Plotter:
             "alpha": 0.707,
             "cmap": "inferno",
             "edgecolor": None,
+            "rot": 45,
             "shading": "flat",
+            "title": None,
+            "xlabel": None,
+            "ylabel": None,
         } | kwargs
-
-        kpop = kwargs.pop
-        axes = kpop("ax", None) or axes()
-        title = kpop("title", None)
-        xlabel = kpop("xlabel", None)
-        ylabel = kpop("ylabel", None)
-        colorbar = kpop("colorbar", False)
-        rotation = kpop("rot", 45)
 
         data = data.iloc[::-1, :]
         cols = data.columns
         rows = data.index
-        axes.set_title(title)
-        axes.set_xlabel(xlabel)
-        axes.set_ylabel(ylabel)
-        axes.set_xticks(range(len(cols)))
-        axes.set_yticks(range(len(rows)))
-        axes.set_xticklabels(cols, ha="left", rotation=rotation)
-        axes.set_yticklabels(rows, verticalalignment="bottom")
-        axes.tick_params(labeltop=True, labelbottom=False, length=0)
-        plot = axes.pcolormesh(data, **kwargs)
-        if colorbar:
-            axes.figure.colorbar(plot)
 
-        return axes
+        ax = axes()
+        ax.set_title(kwargs.pop("title"))
+        ax.set_xlabel(kwargs.pop("xlabel"))
+        ax.set_ylabel(kwargs.pop("ylabel"))
+        ax.set_xticks(range(len(cols)))
+        ax.set_yticks(range(len(rows)))
+        ax.set_xticklabels(cols, ha="left", rotation=kwargs.pop("rot"))
+        ax.set_yticklabels(rows, verticalalignment="bottom")
+        ax.tick_params(labeltop=True, labelbottom=False, length=0)
+        subplot = ax.pcolormesh(data, **kwargs)
+        if kwargs.pop("colorbar", False):
+            ax.figure.colorbar(subplot)
+
+        return ax
 
     def hist(self, data, **kwargs):
         """AxesSubplot: Histogram for each column."""
@@ -213,9 +211,12 @@ class Plotter:
             "x": cols[0],
             "y": cols[1],
         } | kwargs
-        if len(cols) > 2:
+
+
+        ncols = len(cols)
+        if ncols > 2:
             kwargs = {"c": data[cols[2]]} | kwargs
-        if len(cols) > 3:
+        if ncols > 3:
             kwargs = {"s": data[cols[3]]} | kwargs
 
         return self(data, kind="scatter", **kwargs)
