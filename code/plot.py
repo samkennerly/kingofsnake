@@ -1,5 +1,5 @@
-from matplotlib import style as mpstyle
-from matplotlib.pyplot import figure
+import matplotlib.pyplot
+import matplotlib.style
 
 class Plotter:
     """
@@ -12,7 +12,7 @@ class Plotter:
     Modify .style to change the global matplotlib style setting.
     """
 
-    styles = mpstyle.available
+    styles = matplotlib.style.available
 
     def __init__(self, style="bmh"):
         params = {
@@ -71,7 +71,7 @@ class Plotter:
     @style.setter
     def style(self, name):
         """None: Modify matplotlib.style."""
-        mpstyle.use(name)
+        matplotlib.style.use(name)
 
         self._style = name
 
@@ -83,7 +83,7 @@ class Plotter:
 
     def figure(self, **kwargs):
         """Figure: Create a new figure."""
-        return figure(**(self.params["figure"] | kwargs))
+        return matplotlib.pyplot.figure(**(self.params["figure"] | kwargs))
 
     # Plot methods with DataFrame input
 
