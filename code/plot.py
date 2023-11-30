@@ -178,15 +178,6 @@ class Plotter:
 
         return axes
 
-    def hexbin(self, data, **kwargs):
-        """AxesSubplot: Scatterplot with hexagonal bins."""
-        kwargs = {
-            "cmap": "cubehelix",
-            "colorbar": False,
-        } | kwargs
-
-        raise NotImplementedError
-
     def hist(self, data, **kwargs):
         """AxesSubplot: Histogram for each column."""
         kwargs = {
