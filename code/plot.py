@@ -21,33 +21,26 @@ LEGEND = (
     ("borderaxespad", 0.0),
     ("loc", "upper left"),
 )
-STYLE = "bmh"
 
 
-class Plot:
+class Plotter:
     """
-    Visualize pandas.DataFrame or .Series inputs.
-
-    Each Plot() object remembers its own default parameters.
+    PANDAS plotting methods with personalized default parameters.
     Most methods are thin wrappers around DataFrame plot methods.
-    Call a Plot() to call to DataFrame.plot() with custom arguments.
 
-    Caution: Modifies matplotlib.style when an object is created.
+    Calling a Plotter() calls DataFrame.plot() with custom arguments.
     """
-
     styles = mpstyle.available
 
-    def __init__(self, style=STYLE, **kwargs):
-        mpstyle.use(style)
-
-        params = dict()
-        params["axes"] = {k: kwargs.pop(k, v) for k, v in AXES}
-        params["figure"] = {k: kwargs.pop(k, v) for k, v in FIGURE}
-        params["legend"] = {k: kwargs.pop(k, v) for k, v in LEGEND}
-        if kwargs:
-            raise KeyError(f"unknown keyword arguments {sorted(kwargs)}")
+    def __init__(self, style="bmh"):
+        params = {
+            "axes": {k:v for k, v in AXES},
+            "figure": {k:v for k, v in FIGURE},
+            "legend": {k:v for k, v in LEGEND},
+        }
 
         self.params = params
+        self.style = style
 
     def __call__(self, data, **kwargs):
         axes = self.axes
@@ -69,7 +62,23 @@ class Plot:
         return axes
 
     def __repr__(self):
-        return f"{type(self).__name__}({self.params})"
+        return f"{type(self).__name__}(style='{self.style}')"
+
+    # Properties
+
+    @property
+    def style(self):
+        """str: Name of selected matplotlib style."""
+        return self._style
+
+    @style.setter
+    def style(self, name):
+        """None: Modify matplotlib.style."""
+        mpstyle.use(name)
+
+        self._style = name
+
+    # Blank matplotlib objects
 
     def axes(self, **kwargs):
         """AxesSubplot: Create blank axes."""
@@ -79,7 +88,7 @@ class Plot:
         """Figure: Create a new figure."""
         return figure(**(self.params["figure"] | kwargs))
 
-    # DataFrame input
+    # Plot methods with DataFrame input
 
     def area(self, data, **kwargs):
         """AxesSubplot: Area plot for each column."""
@@ -224,7 +233,7 @@ class Plot:
 
         return self(data, kind="scatter", **kwargs)
 
-    # Timeseries input
+    # Plot methods with Series input
 
     def quant(self, ts, freq, q=(), **kwargs):
         """
