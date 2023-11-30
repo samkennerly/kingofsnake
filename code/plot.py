@@ -1,24 +1,5 @@
 from matplotlib import style as mpstyle
 from matplotlib.pyplot import figure
-from pandas import DataFrame
-from scipy.cluster.hierarchy import dendrogram
-
-AXES = (("frame_on", False),)
-FIGURE = (
-    ("clear", True),
-    ("dpi", 100),
-    ("edgecolor", None),
-    ("facecolor", None),
-    ("figsize", (10, 5)),
-    ("frameon", False),
-    ("tight_layout", True),
-)
-LEGEND = (
-    ("bbox_to_anchor", (1.05, 1)),
-    ("borderaxespad", 0.0),
-    ("loc", "upper left"),
-)
-
 
 class Plotter:
     """
@@ -26,18 +7,38 @@ class Plotter:
     Each Plotter object stores parameters for matplotlib plots.
 
     Call to call DataFrame.plot() with custom arguments.
-    This (and many other methods) returns an AxesSubplot.
+    This (and most other methods) returns an AxesSubplot.
 
-    Modifing .style changes the global matplotlib style setting.
+    Modify .style to change the global matplotlib style setting.
     """
 
     styles = mpstyle.available
 
     def __init__(self, style="bmh"):
         params = {
-            "axes": {k: v for k, v in AXES},
-            "figure": {k: v for k, v in FIGURE},
-            "legend": {k: v for k, v in LEGEND},
+            "axes": {
+                "frame_on": False,
+            },
+            "figure": {
+                "clear": True,
+                "dpi": 100,
+                "edgecolor": None,
+                "facecolor": None,
+                "figsize": (10,5),
+                "frameon": False,
+                "tight_layout": True,
+            },
+            "legend": {
+                "bbox_to_anchor": (1.05, 1),
+                "borderaxespad": 0.0,
+                "loc": "upper left",
+            },
+            "plot": {
+                "grid": False,
+                "legend": False,
+                "xlabel": None,
+                "ylabel": None,
+            }
         }
 
         self.params = params
@@ -47,20 +48,15 @@ class Plotter:
         axes = self.axes
         params = self.params
 
-        kwargs = {
-            "grid": False,
-            "legend": False,
-        } | kwargs
+        kwargs = params["plot"] | kwargs
 
-        data = DataFrame(data)
-        axes = kwargs.pop("ax", None) or axes()
-        axes = data.plot(ax=axes, **kwargs)
-        axes.set_xlabel(kwargs.pop("xlabel", None))
-        axes.set_ylabel(kwargs.pop("ylabel", None))
+        ax = data.plot(ax=axes(), **kwargs)
+        ax.set_xlabel(kwargs["xlabel"])
+        ax.set_ylabel(kwargs["ylabel"])
         if kwargs.get("legend"):
-            axes.legend(**params["legend"])
+            ax.legend(**params["legend"])
 
-        return axes
+        return ax
 
     def __repr__(self):
         return f"{type(self).__name__}(style='{self.style}')"
@@ -165,7 +161,7 @@ class Plotter:
         colorbar = kpop("colorbar", False)
         rotation = kpop("rot", 45)
 
-        data = DataFrame(data).iloc[::-1, :]
+        data = data.iloc[::-1, :]
         cols = data.columns
         rows = data.index
         axes.set_title(title)
