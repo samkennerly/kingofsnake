@@ -31,7 +31,7 @@ def weighted(links):
     return links
 
 
-class Graph:
+class GraphFrame:
     """
     Force-directed graph layout based on Gephi's ForceAtlas2 model.
 
@@ -48,7 +48,9 @@ class Graph:
     """
 
     def __init__(self, graph):
-        self.links = graph.links if isinstance(graph, type(self)) else weighted(graph)
+        framed = isinstance(graph, type(self))
+
+        self.links = graph.links if framed else weighted(graph)
 
     def __call__(self, nsteps, x=(), y=()):
         matrix, nodes = self.matrix, self.nodes
@@ -81,12 +83,13 @@ class Graph:
         return len(self.links)
 
     def __repr__(self):
-        return f"{type(self).__name__} with {len(self)} links\n{self.links}"
+        return f"{type(self).__name__} with {len(self)} links"
 
-    def frame(self, steps=120):
-        """DataFrame: Finished graph layout. Intermediate steps are discarded."""
+    def layout(self, t=120):
+        """DataFrame: (x,y) coordinates of each node after t timesteps. """
         nodes = self.nodes
-        for x, y in self(steps):
+
+        for x, y in self(t):
             pass
 
         return DataFrame({"x": x, "y": y}, index=nodes)
