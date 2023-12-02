@@ -47,10 +47,74 @@ class GraphFrame:
     Iterating over a Graph returns rows as namedtuples.
     """
 
-    def __init__(self, graph):
-        framed = isinstance(graph, type(self))
+    def __init__(self, links):
+        framed = isinstance(links, type(self))
 
-        self.links = graph.links if framed else weighted(graph)
+        self.links = graph.links if framed else weighted(links)
+
+    def __len__(self):
+        return len(self.links)
+
+    def __repr__(self):
+        return f"{type(self).__name__} with {len(self)} links\n{self.links}"
+
+    # Constructors
+
+    def flipped(self):
+        """GraphFrame: New graph with all links reversed. """
+        return type(self)(self.links[['target', 'source', 'weight']])
+
+    @classmethod
+    def from_sources(cls, sources):
+        return cls.from_targets(sources).flipped()
+
+    @classmethod
+    def from_targets(cls, targets):
+        return cls((s,t) for s, vals in targets.items() for t in vals)
+
+    # Properties
+
+    @property
+    def matrix(self):
+        """scipy.sparse.coo: Sparse adjacency matrix."""
+        links, nodes = self.links, self.nodes
+
+        i = links["source"].cat.codes.values
+        j = links["target"].cat.codes.values
+        k = links["weight"].values
+        n = len(nodes)
+
+        return coo_matrix((k, (i, j)), shape=(n, n)).tocsr()
+
+    @property
+    def nodes(self):
+        """list: Sorted union of sources and targets."""
+        return self.links["source"].cat.categories.tolist()
+
+    @property
+    def weights(self):
+        """Series: Weight of each (source, target) pair. """
+        return self.links.groupby(['source', 'target'], observed=True)['weight'].sum()
+
+    # Iterators
+
+    def __iter__(self):
+        return self.links.itertuples(index=False, name="Link")
+
+    def pairs(self):
+        """list of lists: [source, target] pairs without weights. """
+        return ((s, t) for s, t, w in self)
+
+    def sources(self):
+        """dict of lists: Sources for each target in graph. """
+        return self.flipped().targets()
+
+    def targets(self):
+        """dict of lists: Targets for each source in graph. """
+        for k, v in self.links.groupby('source', observed=True)['target']:
+            yield k, sorted(v)
+
+    # Drawing methods
 
     def __call__(self, nsteps, x=(), y=()):
         matrix, nodes = self.matrix, self.nodes
@@ -76,15 +140,6 @@ class GraphFrame:
 
             yield points.real.copy(), points.imag.copy()
 
-    def __iter__(self):
-        return self.links.itertuples(index=False, name="Link")
-
-    def __len__(self):
-        return len(self.links)
-
-    def __repr__(self):
-        return f"{type(self).__name__} with {len(self)} links"
-
     def layout(self, t=120):
         """DataFrame: (x,y) coordinates of each node after t timesteps. """
         nodes = self.nodes
@@ -93,20 +148,3 @@ class GraphFrame:
             pass
 
         return DataFrame({"x": x, "y": y}, index=nodes)
-
-    @property
-    def matrix(self):
-        """scipy.sparse.coo: Sparse adjacency matrix."""
-        links, nodes = self.links, self.nodes
-
-        i = links["source"].cat.codes.values
-        j = links["target"].cat.codes.values
-        k = links["weight"].values
-        n = len(nodes)
-
-        return coo_matrix((k, (i, j)), shape=(n, n)).tocsr()
-
-    @property
-    def nodes(self):
-        """Index: Sorted union of sources and targets."""
-        return self.links["source"].cat.categories
