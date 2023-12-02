@@ -61,8 +61,8 @@ class GraphFrame:
     # Constructors
 
     def flipped(self):
-        """GraphFrame: New graph with all links reversed. """
-        return type(self)(self.links[['target', 'source', 'weight']])
+        """GraphFrame: New graph with all links reversed."""
+        return type(self)(self.links[["target", "source", "weight"]])
 
     @classmethod
     def from_sources(cls, sources):
@@ -70,7 +70,7 @@ class GraphFrame:
 
     @classmethod
     def from_targets(cls, targets):
-        return cls((s,t) for s, vals in targets.items() for t in vals)
+        return cls((s, t) for s, vals in targets.items() for t in vals)
 
     # Properties
 
@@ -93,8 +93,8 @@ class GraphFrame:
 
     @property
     def weights(self):
-        """Series: Weight of each (source, target) pair. """
-        return self.links.groupby(['source', 'target'], observed=True)['weight'].sum()
+        """Series: Weight of each (source, target) pair."""
+        return self.links.groupby(["source", "target"], observed=True)["weight"].sum()
 
     # Iterators
 
@@ -102,16 +102,16 @@ class GraphFrame:
         return self.links.itertuples(index=False, name="Link")
 
     def pairs(self):
-        """list of lists: [source, target] pairs without weights. """
+        """list of lists: [source, target] pairs without weights."""
         return ((s, t) for s, t, w in self)
 
     def sources(self):
-        """dict of lists: Sources for each target in graph. """
+        """dict of lists: Sources for each target in graph."""
         return self.flipped().targets()
 
     def targets(self):
-        """dict of lists: Targets for each source in graph. """
-        for k, v in self.links.groupby('source', observed=True)['target']:
+        """dict of lists: Targets for each source in graph."""
+        for k, v in self.links.groupby("source", observed=True)["target"]:
             yield k, sorted(v)
 
     # Drawing methods
@@ -141,7 +141,7 @@ class GraphFrame:
             yield points.real.copy(), points.imag.copy()
 
     def layout(self, t=120):
-        """DataFrame: (x,y) coordinates of each node after t timesteps. """
+        """DataFrame: (x,y) coordinates of each node after t timesteps."""
         nodes = self.nodes
 
         for x, y in self(t):
