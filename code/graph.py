@@ -16,18 +16,19 @@ def limited(z, maxr):
 
 class GraphFrame:
     """
-    Force-directed graph layout based on Gephi's ForceAtlas2 model.
+    Store graph data and calculate coordinates for drawing that graph.
+    Uses drawing physics based on based on Gephi's ForceAtlas2 energy model.
 
-    Initialize with any valid DataFrame input with 2 or 3 columns.
-    Graph stores links as a DataFrame with 3 columns: source, target, weight.
-    If input has 2 columns, then each row is assigned weight 1.
-    Weights for duplicated (node, node) pairs are summed.
+    Inputs:
+        DataFrame with [source, target] as first 2 columns, OR
+        DataFrame with [source, target, weight] as first 3 columns, OR
+        anything accepted by pandas.DataFrame() constructor
+
+    If no weight is provided, links are weighted by how often they appear.
 
     Call with a number of timesteps to return two NumPy arrays (x, y).
     Call accepts optional starting coordinates as 'x', 'y' keyword arguments.
     Coordinates are typically, but not always, in the range [-1, 1].
-
-    Iterating over a Graph returns rows as namedtuples.
     """
 
     def __init__(self, links):
