@@ -14,23 +14,6 @@ def limited(z, maxr):
     return rad * z
 
 
-def weighted(links):
-    """DataFrame: [source, target, weight] for each link."""
-    links = DataFrame(links)
-
-    cols = list(links.columns)
-    links = links.groupby(cols[0:2], observed=True)
-    links = links[cols[2]].sum() if (len(cols) > 2) else links.size().rename("_")
-    links = links.loc[links.ne(0)].reset_index()
-    links.columns = "source target weight".split()
-
-    nodes = sorted(set(links["source"].unique()) | set(links["target"].unique()))
-    for col in "source target".split():
-        links[col] = Categorical(links[col], categories=nodes)
-
-    return links
-
-
 class GraphFrame:
     """
     Force-directed graph layout based on Gephi's ForceAtlas2 model.
@@ -48,9 +31,24 @@ class GraphFrame:
     """
 
     def __init__(self, links):
-        framed = isinstance(links, type(self))
+        links = DataFrame(links)
+        cols = list(links.columns)
 
-        self.links = graph.links if framed else weighted(links)
+        # Sum weights for each (source, target) pair
+        links = links.groupby(cols[0:2], observed=True)
+        links = links[cols[2]].sum() if (len(cols) > 2) else links.size()
+        links.index.names = "source target".split()
+        links.name = "weight"
+
+        # Drop zero-weight links and convert to DataFrame
+        links = links.loc[links.ne(0)].reset_index()
+
+        # Convert sources and targets to Categorical
+        cats = sorted(set(links["source"].unique()) | set(links["target"].unique()))
+        links["source"] = Categorical(links["source"], categories=cats)
+        links["target"] = Categorical(links["target"], categories=cats)
+
+        self.links = links
 
     def __len__(self):
         return len(self.links)
