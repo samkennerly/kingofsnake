@@ -13,12 +13,14 @@ def radlimited(z, maxr):
 
     return rad * z
 
+
 def randomz(n):
     """Numpy complex128 array: Random points inside unit square."""
     points = randn(n).astype("complex128")
     points += 1j * randn(n).astype("complex128")
 
     return points
+
 
 def repel(points):
     """Numpy complex128 array: Repulsive force on each point"""
@@ -27,6 +29,7 @@ def repel(points):
     forces = (z.mean() for z in invsqrd)
 
     return fromiter(forces, count=len(points), dtype="complex128")
+
 
 class GraphFrame:
     """
@@ -114,7 +117,7 @@ class GraphFrame:
         nodes = self.nodes
 
         nrows = len(nodes)
-        springs = matrix - diags(matrix.diagonal()) # remove loops
+        springs = matrix - diags(matrix.diagonal())  # remove loops
         springs *= nrows / springs.sum()  # normalize spring constants
         springs = laplacian(springs, use_out_degree=True)
         springs += identity(nrows, dtype=springs.dtype, format=springs.format)
