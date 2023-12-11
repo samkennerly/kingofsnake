@@ -13,6 +13,13 @@ def limited(z, maxr):
 
     return rad * z
 
+def repel(points):
+    """Numpy complex128 array: Repulsive force on each point"""
+    vectors = (z - points for z in points)
+    invsqrd = (z / (z * z.conj()).real.clip(1e-9, None) for z in vectors)
+    forces = (z.mean() for z in invsqrd)
+
+    return fromiter(forces, count=len(points), dtype="complex128")
 
 class GraphFrame:
     """
@@ -138,16 +145,13 @@ class GraphFrame:
         springs = self.springs
 
         nrows = len(nodes)
-        dtype = "complex128"
-        points = randn(nrows).astype(dtype)
-        points += 1j * randn(nrows).astype(dtype)
+        points = randn(nrows).astype("complex128")
+        points += 1j * randn(nrows).astype("complex128")
 
         yield points.real.copy(), points.imag.copy()
 
         for speed in linspace(1, 0.1, nsteps - 1):
-            forces = (z - points for z in points)
-            forces = (z / (z * z.conj()).real.clip(1e-9, None) for z in forces)
-            forces = fromiter((z.mean() for z in forces), count=nrows, dtype=dtype)
+            forces = repel(points)
             forces += springs.dot(points)
             points += limited(forces, speed)
 
