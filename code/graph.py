@@ -133,14 +133,14 @@ class GraphFrame:
 
     # Drawing methods
 
-    def __call__(self, nsteps, x=(), y=()):
+    def __call__(self, nsteps):
         nodes = self.nodes
         springs = self.springs
 
-        dtype = "complex128"
         nrows = len(nodes)
-        points = (x or randn(nrows)).astype(dtype)
-        points += (y or 1j * randn(nrows)).astype(dtype)
+        dtype = "complex128"
+        points = randn(nrows).astype(dtype)
+        points += 1j * randn(nrows).astype(dtype)
 
         yield points.real.copy(), points.imag.copy()
 
