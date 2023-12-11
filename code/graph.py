@@ -91,6 +91,24 @@ class GraphFrame:
         return self.links["source"].cat.categories.tolist()
 
     @property
+    def springs(self):
+        """
+        scipy.sparse.csr: Spring force matrix.
+        Includes a fictional node at (0,0) to which all nodes are attracted.
+        """
+        matrix = self.matrix
+        nodes = self.nodes
+
+        nrows = len(nodes)
+        springs = matrix - diags(matrix.diagonal()) # remove loops
+        springs *= nrows / springs.sum()  # normalize spring constants
+        springs = laplacian(springs, use_out_degree=True)
+        springs += identity(nrows, dtype=springs.dtype, format=springs.format)
+        springs *= -1
+
+        return springs
+
+    @property
     def weights(self):
         """Series: Weight of each (source, target) pair."""
         return self.links.groupby(["source", "target"], observed=True)["weight"].sum()
@@ -116,7 +134,8 @@ class GraphFrame:
     # Drawing methods
 
     def __call__(self, nsteps, x=(), y=()):
-        matrix, nodes = self.matrix, self.nodes
+        nodes = self.nodes
+        springs = self.springs
 
         dtype = "complex128"
         nrows = len(nodes)
@@ -125,16 +144,11 @@ class GraphFrame:
 
         yield points.real.copy(), points.imag.copy()
 
-        matrix -= diags(matrix.diagonal())
-        matrix *= nrows / matrix.sum()
-        matrix = laplacian(matrix, use_out_degree=True)
-        matrix += identity(nrows, dtype=matrix.dtype, format=matrix.format)
-
         for speed in linspace(1, 0.1, nsteps - 1):
             forces = (z - points for z in points)
             forces = (z / (z * z.conj()).real.clip(1e-9, None) for z in forces)
             forces = fromiter((z.mean() for z in forces), count=nrows, dtype=dtype)
-            forces -= matrix.dot(points)
+            forces += springs.dot(points)
             points += limited(forces, speed)
 
             yield points.real.copy(), points.imag.copy()
