@@ -5,13 +5,20 @@ from scipy.sparse import coo_matrix, diags, identity
 from scipy.sparse.csgraph import laplacian
 
 
-def limited(z, maxr):
-    """ndarray: Array with magnitudes smoothly compressed to <= 1."""
+def radlimited(z, maxr):
+    """ndarray: Array with magnitudes smoothly compressed to <= maxr."""
     rad = abs(z).clip(1e-9, None)
     rad = tanh(rad) / rad
     rad *= maxr
 
     return rad * z
+
+def randomz(n):
+    """Numpy complex128 array: Random points inside unit square."""
+    points = randn(n).astype("complex128")
+    points += 1j * randn(n).astype("complex128")
+
+    return points
 
 def repel(points):
     """Numpy complex128 array: Repulsive force on each point"""
@@ -144,16 +151,13 @@ class GraphFrame:
         nodes = self.nodes
         springs = self.springs
 
-        nrows = len(nodes)
-        points = randn(nrows).astype("complex128")
-        points += 1j * randn(nrows).astype("complex128")
-
+        points = randomz(len(nodes))
         yield points.real.copy(), points.imag.copy()
 
         for speed in linspace(1, 0.1, nsteps - 1):
             forces = repel(points)
             forces += springs.dot(points)
-            points += limited(forces, speed)
+            points += radlimited(forces, speed)
 
             yield points.real.copy(), points.imag.copy()
 
