@@ -76,16 +76,36 @@ class GraphFrame:
 
     # Constructors
 
+    @classmethod
+    def example(cls):
+        """GraphFrame: Krackhardt kite graph. """
+        targets = {
+            'a': list('bcdf'),
+            'b': list('adeg'),
+            'c': list('adf'),
+            'd': list('abcefg'),
+            'e': list('bdg'),
+            'f': list('acdgh'),
+            'g': list('bdefh'),
+            'h': list('fgi'),
+            'i': list('h'),
+            'j': list('i'),
+        }
+
+        return cls.from_targets(targets)
+
     def flipped(self):
         """GraphFrame: New graph with all links reversed."""
         return type(self)(self.links[["target", "source", "weight"]])
 
     @classmethod
     def from_sources(cls, sources):
+        """GraphFrame: New graph from {node: [iterable of sources]} mapping."""
         return cls.from_targets(sources).flipped()
 
     @classmethod
     def from_targets(cls, targets):
+        """GraphFrame: New graph from {node: [iterable of targets]} mapping."""
         return cls((s, t) for s, vals in targets.items() for t in vals)
 
     # Properties
