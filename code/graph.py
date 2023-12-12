@@ -156,14 +156,13 @@ class GraphFrame:
 
         points = randomz(len(nodes))
         for speed in linspace(1, 0.1, nsteps - 1):
-
             forces = repel(points)
             forces += springs.dot(points)
             points += radlimited(forces, speed)
 
             data = DataFrame(index=nodes)
-            data['x'] = points.real.copy()
-            data['y'] = points.imag.copy()
+            data["x"] = points.real.copy()
+            data["y"] = points.imag.copy()
 
             yield data
 
@@ -175,16 +174,16 @@ class GraphFrame:
         return data
 
     def plot(self, t=128, **kwargs):
-        """AxesSubplot: Scatterplot of graph node coordinates after t timesteps. """
+        """AxesSubplot: Scatterplot of graph node coordinates after t timesteps."""
         coords = self.coords
 
         kwargs = {
-            'color': 'k',
-            'figsize': (8,8),
-            'x': 'x',
-            'xlim': (-1,1),
-            'y': 'y',
-            'ylim': (-1,1),
+            "color": "k",
+            "figsize": (8, 8),
+            "x": "x",
+            "xlim": (-1, 1),
+            "y": "y",
+            "ylim": (-1, 1),
         } | kwargs
 
         return coords(t).plot.scatter(**kwargs)
