@@ -155,20 +155,36 @@ class GraphFrame:
         springs = self.springs
 
         points = randomz(len(nodes))
-        yield points.real.copy(), points.imag.copy()
-
         for speed in linspace(1, 0.1, nsteps - 1):
+
             forces = repel(points)
             forces += springs.dot(points)
             points += radlimited(forces, speed)
 
-            yield points.real.copy(), points.imag.copy()
+            data = DataFrame(index=nodes)
+            data['x'] = points.real.copy()
+            data['y'] = points.imag.copy()
 
-    def layout(self, t=120):
+            yield data
+
+    def coords(self, t=128):
         """DataFrame: (x,y) coordinates of each node after t timesteps."""
-        nodes = self.nodes
-
-        for x, y in self(t):
+        for data in self(t):
             pass
 
-        return DataFrame({"x": x, "y": y}, index=nodes)
+        return data
+
+    def plot(self, t=128, **kwargs):
+        """AxesSubplot: Scatterplot of graph node coordinates after t timesteps. """
+        coords = self.coords
+
+        kwargs = {
+            'color': 'k',
+            'figsize': (8,8),
+            'x': 'x',
+            'xlim': (-1,1),
+            'y': 'y',
+            'ylim': (-1,1),
+        } | kwargs
+
+        return coords(t).plot.scatter(**kwargs)
