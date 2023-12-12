@@ -152,6 +152,7 @@ class GraphFrame:
 
         points = randomz(len(nodes))
         for speed in linspace(1, 0.1, nsteps - 1):
+
             forces = repel(points)
             forces += springs.dot(points)
             points += radlimited(forces, speed)
@@ -168,6 +169,10 @@ class GraphFrame:
         for data in self(t):
             pass
 
+        maxrad = sqrt((data['x']**2 + data['y']**2).max())
+        data['x'] /= maxrad
+        data['y'] /= maxrad
+
         return data
 
     def plot(self, t=128, **kwargs):
@@ -178,9 +183,9 @@ class GraphFrame:
             "color": "k",
             "figsize": (8, 8),
             "x": "x",
-            #"xlim": (-1, 1),
+            "xlim": (-1, 1),
             "y": "y",
-            #"ylim": (-1, 1),
+            "ylim": (-1, 1),
         } | kwargs
 
         return coords(t).plot.scatter(**kwargs)
