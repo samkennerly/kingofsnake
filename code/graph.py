@@ -1,4 +1,4 @@
-from numpy import fromiter, linspace, tanh
+from numpy import fromiter, linspace, sqrt, tanh
 from numpy.random import randn
 from pandas import Categorical, DataFrame
 from scipy.sparse import coo_matrix, diags, identity
@@ -109,10 +109,7 @@ class GraphFrame:
 
     @property
     def springs(self):
-        """
-        scipy.sparse.csr: Spring force matrix.
-        Includes a fictional node at (0,0) to which all nodes are attracted.
-        """
+        """scipy.sparse.csr: Spring force matrix."""
         matrix = self.matrix
         nodes = self.nodes
 
@@ -120,7 +117,6 @@ class GraphFrame:
         springs = matrix - diags(matrix.diagonal())  # remove loops
         springs *= nrows / springs.sum()  # normalize spring constants
         springs = laplacian(springs, use_out_degree=True)
-        springs += identity(nrows, dtype=springs.dtype, format=springs.format)
         springs *= -1
 
         return springs
@@ -159,6 +155,7 @@ class GraphFrame:
             forces = repel(points)
             forces += springs.dot(points)
             points += radlimited(forces, speed)
+            points -= points.mean()
 
             data = DataFrame(index=nodes)
             data["x"] = points.real.copy()
@@ -181,9 +178,9 @@ class GraphFrame:
             "color": "k",
             "figsize": (8, 8),
             "x": "x",
-            "xlim": (-1, 1),
+            #"xlim": (-1, 1),
             "y": "y",
-            "ylim": (-1, 1),
+            #"ylim": (-1, 1),
         } | kwargs
 
         return coords(t).plot.scatter(**kwargs)
