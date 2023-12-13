@@ -53,8 +53,7 @@ class GraphFrame:
         # Sum weights for each (source, target) pair
         links = links.groupby(cols[0:2], observed=True)
         links = links[cols[2]].sum() if (len(cols) > 2) else links.size()
-        links.index.names = "source target".split()
-        links.name = "weight"
+        links.index.names, links.name = "source target".split(), "weight"
 
         # Drop zero-weight links and convert from Series to DataFrame
         links = links.loc[links.ne(0)].reset_index()
@@ -187,6 +186,7 @@ class GraphFrame:
     def plot(self, t=64, **kwargs):
         """AxesSubplot: Scatterplot of node coordinates after t timesteps."""
         kwargs = {
+            "alpha": 0.707,
             "color": "k",
             "figsize": (8, 8),
             "x": "x",
