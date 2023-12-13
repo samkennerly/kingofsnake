@@ -169,21 +169,21 @@ class GraphFrame:
         return self.links.itertuples(index=False, name="Link")
 
     def pairs(self):
-        """Generator of 2-tuples: (source, target) pairs without weights."""
+        """Generate 2-tuples: (source, target) pairs without weights."""
         return ((s, t) for s, t, w in self)
 
     def sources(self):
-        """node: [list of nodes] pairs: Sources for each target in graph."""
+        """Generate (node, list[nodes]) tuples: Sources for each target in graph."""
         return self.flipped().targets()
 
     def targets(self):
-        """node: [list of nodes] pairs: Targets for each source in graph."""
+        """Generate (node, list[nodes]) tuples: Targets for each source in graph."""
         for k, v in self.links.groupby("source", observed=True)["target"]:
             yield k, sorted(v)
 
     # Plotting methods
 
-    def plot(self, t=64, **kwargs):
+    def plot(self, t=128, **kwargs):
         """AxesSubplot: Scatterplot of node coordinates after t timesteps."""
         kwargs = {
             "alpha": 0.707,
