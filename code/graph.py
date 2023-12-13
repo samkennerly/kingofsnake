@@ -90,6 +90,9 @@ class GraphFrame:
     def __repr__(self):
         return f"{type(self).__name__} with {len(self)} links"
 
+    def __str__(self):
+        return "\n".join(f"{s} -> {t}: {w}" for s,t,w in self)
+
     # Constructors
 
     @classmethod
