@@ -68,6 +68,24 @@ class GraphFrame:
 
         self.links = links
 
+    def __call__(self, nsteps=64):
+        nodes = self.nodes
+        springs = self.springs
+
+        points = randomz(len(nodes))
+        for speed in linspace(1, 0.1, nsteps - 1):
+            forces = springs.dot(points) + repel(points)
+            points += radlimited(forces, speed)
+
+        points -= points.mean()
+        points /= abs(points).max()
+
+        data = DataFrame(index=nodes)
+        data["x"] = points.real
+        data["y"] = points.imag
+
+        return data
+
     def __len__(self):
         return len(self.links)
 
@@ -112,7 +130,7 @@ class GraphFrame:
 
     @property
     def matrix(self):
-        """scipy.sparse.coo: Sparse adjacency matrix."""
+        """scipy.sparse.csr: Sparse adjacency matrix."""
         links, nodes = self.links, self.nodes
 
         i = links["source"].cat.codes.values
@@ -166,39 +184,8 @@ class GraphFrame:
 
     # Drawing methods
 
-    def __call__(self, nsteps):
-        nodes = self.nodes
-        springs = self.springs
-
-        points = randomz(len(nodes))
-        for speed in linspace(1, 0.1, nsteps - 1):
-
-            forces = repel(points)
-            forces += springs.dot(points)
-            points += radlimited(forces, speed)
-            points -= points.mean()
-
-            data = DataFrame(index=nodes)
-            data["x"] = points.real.copy()
-            data["y"] = points.imag.copy()
-
-            yield data
-
-    def coords(self, t=128):
-        """DataFrame: (x,y) coordinates of each node after t timesteps."""
-        for data in self(t):
-            pass
-
-        maxrad = sqrt((data['x']**2 + data['y']**2).max())
-        data['x'] /= maxrad
-        data['y'] /= maxrad
-
-        return data
-
-    def plot(self, t=128, **kwargs):
+    def plot(self, t=64, **kwargs):
         """AxesSubplot: Scatterplot of graph node coordinates after t timesteps."""
-        coords = self.coords
-
         kwargs = {
             "color": "k",
             "figsize": (8, 8),
@@ -208,4 +195,4 @@ class GraphFrame:
             "ylim": (-1, 1),
         } | kwargs
 
-        return coords(t).plot.scatter(**kwargs)
+        return self(t).plot.scatter(**kwargs)
