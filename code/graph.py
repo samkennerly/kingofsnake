@@ -1,51 +1,49 @@
-from numpy import fromiter, linspace, sqrt, tanh
+from numpy import fromiter, linspace, tanh
 from numpy.random import randn
 from pandas import Categorical, DataFrame
-from scipy.sparse import coo_matrix, diags, identity
+from scipy.sparse import coo_matrix, diags
 from scipy.sparse.csgraph import laplacian
 
 
-def radlimited(z, maxr):
-    """ndarray: Array with magnitudes smoothly compressed to <= maxr."""
+def radlimited(z, maxrad):
+    """numpy array: z with magnitudes smoothly compressed to <= maxrad."""
     rad = abs(z).clip(1e-9, None)
-    rad = tanh(rad) / rad
-    rad *= maxr
 
-    return rad * z
+    return z * maxrad * tanh(rad) / rad
 
 
 def randomz(n):
-    """Numpy complex128 array: Random points inside unit square."""
-    points = randn(n).astype("complex128")
-    points += 1j * randn(n).astype("complex128")
-
-    return points
+    """numpy complex128 array: Random points inside unit square."""
+    return randn(n).astype("complex128") + 1j * randn(n).astype("complex128")
 
 
 def repel(points):
-    """Numpy complex128 array: Repulsive force on each point"""
-    vectors = (z - points for z in points)
-    invsqrd = (z / (z * z.conj()).real.clip(1e-9, None) for z in vectors)
-    forces = (z.mean() for z in invsqrd)
+    """numpy complex128 array: 1/distance repulsive force on each point."""
+    forces = (z - points for z in points)
+    forces = (z / (z * z.conj()).real.clip(1e-9, None) for z in forces)
+    forces = (z.mean() for z in forces)
 
     return fromiter(forces, count=len(points), dtype="complex128")
 
 
 class GraphFrame:
     """
-    Store graph data and calculate coordinates for drawing that graph.
-    Uses drawing physics based on based on Gephi's ForceAtlas2 energy model.
+    Force-directed graph drawing based on Gephi's ForceAtlas2 energy model.
+    Graphs can be directed and/or weighted with integers or floats.
+    If no weights are input, then links are weighted by how often they appear.
 
-    Inputs:
-        DataFrame with [source, target] as first 2 columns, OR
+    Call to calculate (x,y) coordinates for each node in the graph.
+
+    Constructor inputs:
         DataFrame with [source, target, weight] as first 3 columns, OR
-        anything accepted by pandas.DataFrame() constructor
+        DataFrame with [source, target] as first 2 columns, OR
+        anything that pandas.DataFrame() can convert to one of the above
 
-    If no weight is provided, links are weighted by how often they appear.
+    Call inputs:
+        nsteps  optional positive int: number of timesteps
 
-    Call with a number of timesteps to return two NumPy arrays (x, y).
-    Call accepts optional starting coordinates as 'x', 'y' keyword arguments.
-    Coordinates are typically, but not always, in the range [-1, 1].
+    Call outputs:
+        DataFrame with ["x", "y"] coordinates for each node
     """
 
     def __init__(self, links):
@@ -58,7 +56,7 @@ class GraphFrame:
         links.index.names = "source target".split()
         links.name = "weight"
 
-        # Drop zero-weight links and convert to DataFrame
+        # Drop zero-weight links and convert from Series to DataFrame
         links = links.loc[links.ne(0)].reset_index()
 
         # Convert sources and targets to Categorical
@@ -68,35 +66,35 @@ class GraphFrame:
 
         self.links = links
 
-    def __call__(self, nsteps=64):
+    def __call__(self, nsteps=128):
         nodes = self.nodes
         springs = self.springs
 
+        # Start with random points in unit square
         points = randomz(len(nodes))
+
+        # Decrease speed limit on each timestep
         for speed in linspace(1, 0.1, nsteps - 1):
             forces = springs.dot(points) + repel(points)
             points += radlimited(forces, speed)
 
+        # Recenter and scale to fit inside unit circle
         points -= points.mean()
         points /= abs(points).max()
 
-        data = DataFrame(index=nodes)
-        data["x"] = points.real
-        data["y"] = points.imag
-
-        return data
+        return DataFrame(index=nodes).assign(x=points.real).assign(y=points.imag)
 
     def __len__(self):
         return len(self.links)
 
     def __repr__(self):
-        return f"{type(self).__name__} with {len(self)} links\n{self.links}"
+        return f"{type(self).__name__} with {len(self)} links"
 
     # Constructors
 
     @classmethod
     def example(cls):
-        """GraphFrame: Krackhardt kite graph. """
+        """GraphFrame: Krackhardt kite. """
         targets = {
             'a': list('bcdf'),
             'b': list('adeg'),
@@ -151,11 +149,9 @@ class GraphFrame:
         matrix = self.matrix
         nodes = self.nodes
 
-        nrows = len(nodes)
         springs = matrix - diags(matrix.diagonal())  # remove loops
-        springs *= nrows / springs.sum()  # normalize spring constants
-        springs = laplacian(springs, use_out_degree=True)
-        springs *= -1
+        springs *= len(nodes) / springs.sum()  # normalize spring constants
+        springs = -1 * laplacian(springs, use_out_degree=True)
 
         return springs
 
@@ -167,25 +163,26 @@ class GraphFrame:
     # Iterators
 
     def __iter__(self):
+        """Iterable of namedtuples: (source, target, weight) for each link."""
         return self.links.itertuples(index=False, name="Link")
 
     def pairs(self):
-        """list of lists: [source, target] pairs without weights."""
+        """Generator of 2-tuples: (source, target) pairs without weights."""
         return ((s, t) for s, t, w in self)
 
     def sources(self):
-        """dict of lists: Sources for each target in graph."""
+        """node: [list of nodes] pairs: Sources for each target in graph."""
         return self.flipped().targets()
 
     def targets(self):
-        """dict of lists: Targets for each source in graph."""
+        """node: [list of nodes] pairs: Targets for each source in graph."""
         for k, v in self.links.groupby("source", observed=True)["target"]:
             yield k, sorted(v)
 
-    # Drawing methods
+    # Plotting methods
 
     def plot(self, t=64, **kwargs):
-        """AxesSubplot: Scatterplot of graph node coordinates after t timesteps."""
+        """AxesSubplot: Scatterplot of node coordinates after t timesteps."""
         kwargs = {
             "color": "k",
             "figsize": (8, 8),
