@@ -75,7 +75,7 @@ class GraphFrame:
         points -= points.mean()
         points /= abs(points).max()
 
-        return DataFrame({"x": points.real, "y":points.imag}, index=nodes)
+        return DataFrame({"x": points.real, "y": points.imag}, index=nodes)
 
     def __len__(self):
         return len(self.links)
@@ -84,24 +84,24 @@ class GraphFrame:
         return f"{type(self).__name__} with {len(self)} links"
 
     def __str__(self):
-        return "\n".join(f"{s} -> {t}: {w}" for s,t,w in self)
+        return "\n".join(f"{s} -> {t}: {w}" for s, t, w in self)
 
     # Constructors
 
     @classmethod
     def example(cls):
-        """GraphFrame: Krackhardt kite with weighted tail links. """
+        """GraphFrame: Krackhardt kite with weighted tail links."""
         targets = {
-            'a': list('bcdf'),
-            'b': list('adeg'),
-            'c': list('adf'),
-            'd': list('abcefg'),
-            'e': list('bdg'),
-            'f': list('acdgh'),
-            'g': list('bdefh'),
-            'h': list('fgi'),
-            'i': list('hj'),
-            'j': list('ii'),
+            "a": list("bcdf"),
+            "b": list("adeg"),
+            "c": list("adf"),
+            "d": list("abcefg"),
+            "e": list("bdg"),
+            "f": list("acdgh"),
+            "g": list("bdefh"),
+            "h": list("fgi"),
+            "i": list("hj"),
+            "j": list("ii"),
         }
 
         return cls.from_targets(targets)
