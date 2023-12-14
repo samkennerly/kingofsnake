@@ -28,22 +28,16 @@ def repel(points):
 
 class GraphFrame:
     """
-    Force-directed graph drawing based on Gephi's ForceAtlas2 energy model.
+    Draw force-directed graphs with the Gephi ForceAtlas2 energy model.
     Graphs can be directed and/or weighted with integers or floats.
-    If no weights are input, then links are weighted by how often they appear.
-
-    Call to calculate (x,y) coordinates for each node in the graph.
+    If no weights are given, then links are weighted by how often they appear.
 
     Constructor inputs:
         DataFrame with [source, target, weight] as first 3 columns, OR
         DataFrame with [source, target] as first 2 columns, OR
         anything that pandas.DataFrame() can convert to one of the above
 
-    Call inputs:
-        nsteps  optional positive int: number of timesteps
-
-    Call outputs:
-        DataFrame with ["x", "y"] coordinates for each node
+    Call to return a DataFrame with ["x", "y"] coordinates for each node.
     """
 
     def __init__(self, links):
@@ -106,8 +100,8 @@ class GraphFrame:
             'f': list('acdgh'),
             'g': list('bdefh'),
             'h': list('fgi'),
-            'i': list('hh'),
-            'j': list('iii'),
+            'i': list('hi'),
+            'j': list('ii'),
         }
 
         return cls.from_targets(targets)
@@ -127,6 +121,16 @@ class GraphFrame:
         return cls((s, t) for s, vals in targets.items() for t in vals)
 
     # Properties
+
+    @property
+    def degin(self):
+        """Series: Total weight pointing into each node."""
+        return self.links.groupby("target", observed=False)["weight"].sum()
+
+    @property
+    def degout(self):
+        """Series: Total weight pointing out of each node."""
+        return self.links.groupby("source", observed=False)["weight"].sum()
 
     @property
     def matrix(self):
