@@ -75,7 +75,7 @@ class GraphFrame:
         points -= points.mean()
         points /= abs(points).max()
 
-        return DataFrame(index=nodes).assign(x=points.real).assign(y=points.imag)
+        return DataFrame({"x": points.real, "y":points.imag}, index=nodes)
 
     def __len__(self):
         return len(self.links)
@@ -100,7 +100,7 @@ class GraphFrame:
             'f': list('acdgh'),
             'g': list('bdefh'),
             'h': list('fgi'),
-            'i': list('hi'),
+            'i': list('hj'),
             'j': list('ii'),
         }
 
@@ -153,10 +153,9 @@ class GraphFrame:
     def springs(self):
         """scipy.sparse.csr: Spring force matrix."""
         matrix = self.matrix
-        nodes = self.nodes
 
         springs = matrix - diags(matrix.diagonal())  # remove loops
-        springs *= len(nodes) / springs.sum()  # normalize spring constants
+        springs *= matrix.shape[0] / springs.sum()  # normalize spring constants
         springs = -1 * laplacian(springs, use_out_degree=True)
 
         return springs
@@ -191,7 +190,6 @@ class GraphFrame:
         """AxesSubplot: Scatterplot of node coordinates after t timesteps."""
         kwargs = {
             "alpha": 0.707,
-            "color": "k",
             "figsize": (8, 8),
             "x": "x",
             "xlim": (-1, 1),
