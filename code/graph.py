@@ -96,7 +96,7 @@ class GraphFrame:
 
     @classmethod
     def example(cls):
-        """GraphFrame: Krackhardt kite. """
+        """GraphFrame: Krackhardt kite with weighted tail links. """
         targets = {
             'a': list('bcdf'),
             'b': list('adeg'),
@@ -106,8 +106,8 @@ class GraphFrame:
             'f': list('acdgh'),
             'g': list('bdefh'),
             'h': list('fgi'),
-            'i': list('h'),
-            'j': list('i'),
+            'i': list('hh'),
+            'j': list('iii'),
         }
 
         return cls.from_targets(targets)
