@@ -3,7 +3,8 @@ Constants and convenience functions.
 """
 from pathlib import Path
 
-from numpy import random
+from numpy import cov, random
+from numpy.linalg import eigh
 from pandas import Categorical, DataFrame, Series, read_csv, to_datetime
 from sklearn.datasets import load_iris
 
@@ -35,6 +36,28 @@ def irisdata():
     data = DataFrame(raw.data, columns=cols).assign(species=cats)
 
     return data
+
+
+def princols(data, ncols=2):
+    """
+    DataFrame: DataFrame with numerical columns replaced by principal components.
+
+    Inputs:
+        data    DataFrame   features are columns and rows are observations
+        ncols   int > 0     output will have this many columns
+    """
+    feats = data[data.select_dtypes("number").columns]
+    notfeats = data[data.columns.drop(feats.columns)]
+
+    # Find eigenvectors of covariance matrix with largest eigenvalues
+    eigvals, eigvecs = eigh(cov(feats, rowvar=False))
+    eigvecs = eigvecs[:, -1 : -(1 + ncols) : -1]
+
+    # Transform features to new coordinates
+    pcols = DataFrame(feats @ eigvecs)
+    pcols.columns = [f"pc{n}" for n in range(ncols)]
+
+    return pcols.join(notfeats)
 
 
 def zscores(data, robust=False):
