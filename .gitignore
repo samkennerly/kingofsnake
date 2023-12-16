@@ -18,7 +18,8 @@ __pycache__/
 
 # Data
 /data/*
-!/data/examples
+!/data/dirty/energy.csv
+!/data/clean/energy.csv
 
 # Jupyter secrets
 .ipynb_checkpoints/
