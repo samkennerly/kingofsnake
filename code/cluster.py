@@ -54,7 +54,7 @@ class Hierarchy:
     def __repr__(self):
         return f"{type(self).__name__} with {len(self)} leaves"
 
-    def plot(self, n=0, figsize=None, **kwargs):
+    def plot(self, n=0, figsize=(9, 3), **kwargs):
         """
         matplotlib Axes: Plot a tree of hierarchical clusters.
 
