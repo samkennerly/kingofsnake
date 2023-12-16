@@ -17,9 +17,10 @@ Thumbs.db
 __pycache__/
 
 # Data
-/data/clean/
+/data/clean/*
 !/data/clean/energy.csv
-/data/dirty/
+!/data/clean/iris.csv
+/data/dirty/*
 !/data/dirty/energy.csv
 
 # Jupyter secrets
