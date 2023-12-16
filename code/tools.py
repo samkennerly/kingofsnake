@@ -18,16 +18,6 @@ def afew(data, n=5):
     return data.loc[random.choice(data.index, size=n, replace=False)].copy()
 
 
-def datasplit(data, nrows=0):
-    """(DataFrame, DataFrame): Partition rows into 2 disjoint DataFrames."""
-    nrows = nrows or len(data) // 2
-
-    trainrows = afew(data, nrows).sort_index()
-    testrows = data.drop(index=trainrows.index)
-
-    return trainrows, testrows
-
-
 def irisdata():
     """DataFrame: Fisher's iris dataset from scikit-learn."""
     raw = load_iris()
