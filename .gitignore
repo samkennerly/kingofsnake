@@ -17,9 +17,10 @@ Thumbs.db
 __pycache__/
 
 # Data
-/data/*
-!/data/dirty/energy.csv
+/data/clean/
 !/data/clean/energy.csv
+/data/dirty/
+!/data/dirty/energy.csv
 
 # Jupyter secrets
 .ipynb_checkpoints/
