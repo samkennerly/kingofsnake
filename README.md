@@ -112,42 +112,42 @@ The `clean` command is rarely necessary because `kingofsnake` containers [self-d
 
 The `books` folder contains example notebooks:
 
-- [classify] uses [sklearn.linear_model] to train and test a classifier.
-- [clean] uses [pandas] to standardize, sort, and filter a dataset.
-- [cluster] uses [scipy.cluster.hierarchy] to find clusters in a dataset.
-- [components] uses [sklearn.decomposition.PCA] to reduce the dimension of a dataset.
-- [graph] uses a custom implementation of [ForceAtlas2] to draw graphs.
-- [plot] uses [matplotlib] to visualize data.
+- [classify.ipynb] uses [sklearn.linear_model] to train and test a classifier.
+- [clean.ipynb] uses [pandas] to standardize, sort, and filter a dataset.
+- [cluster.ipynb] uses [scipy.cluster.hierarchy] to find clusters in a dataset.
+- [components.ipynb] uses [sklearn.decomposition.PCA] to reduce the dimension of a dataset.
+- [graph.ipynb] uses a custom implementation of [ForceAtlas2] to draw graphs.
+- [plot.ipynb] uses [matplotlib] to visualize data.
 
-[classify]: books/classify.ipynb
+[classify.ipynb]: books/classify.ipynb
 [sklearn.linear_model]: https://scikit-learn.org/stable/modules/linear_model.html
-[clean]: books/clean.ipynb
+[clean.ipynb]: books/clean.ipynb
 [pandas]: https://pandas.pydata.org/
-[cluster]: books/cluster.ipynb
+[cluster.ipynb]: books/cluster.ipynb
 [scipy.cluster.hierarchy]: https://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html
-[components]: books/components.ipynb
+[components.ipynb]: books/components.ipynb
 [sklearn.decomposition.PCA]: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
-[graph]: books/graph.ipynb
+[graph.ipynb]: books/graph.ipynb
 [ForceAtlas2]: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0098679
-[plot]: books/plot.ipynb
+[plot.ipynb]: books/plot.ipynb
 [matplotlib]: https://matplotlib.org/
 
 ### code
 
 The `code` folder contains example Python [modules]:
 
-- [classify] for classification
-- [cluster] for clustering
-- [graph] for graph drawing
-- [plot] for data visualization
-- [tools] for constants and convenience methods
+- [classify.py] for classification
+- [cluster.py] for clustering
+- [graph.py] for graph drawing
+- [plot.py] for data visualization
+- [tools.py] for constants and convenience methods
 
 [modules]: https://docs.python.org/3/tutorial/modules.html
-[classify]: code/classify.py
-[cluster]: code/cluster.py
-[graph]: code/graph.py
-[plot]: code/plot.py
-[tools]: code/tools.py
+[classify.py]: code/classify.py
+[cluster.py]: code/cluster.py
+[graph.py]: code/graph.py
+[plot.py]: code/plot.py
+[tools.py]: code/tools.py
 
 ### data
 
