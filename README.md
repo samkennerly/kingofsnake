@@ -67,7 +67,7 @@ Generate a new repo [from this template].
 [requirements.txt]: requirements.txt
 [Docker image]: https://docs.docker.com/engine/reference/commandline/images/
 
-### serve jupyter noteboks
+### serve jupyter notebooks
 
 1. Open a [terminal] and `cd` to this folder.
 1. Run `./kitchen serve` to start a [Jupyter server].
