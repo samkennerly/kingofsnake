@@ -1,25 +1,25 @@
 # kingofsnake
 
-Use your favorite data analysis packages without installing multiple Pythons.
+Use [Jupyter], [SciPy], [pandas], and [scikit-learn] without installing any Pythons.
+
+[Jupyter]: https://jupyter.org/
+[SciPy]: https://scipy.org/
+[pandas]: https://pandas.pydata.org/
+[scikit-learn]: https://scikit-learn.org/stable/index.html
 
 <img
   alt="snakepit"
   src="https://raw.githubusercontent.com/samkennerly/posters/master/kingofsnake.jpeg"
   title="Asps. Very dangerous.">
 
-This [template] is for research projects. For production Python projects, see [pydiner].
-
-[template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
-[pydiner]: https://github.com/samkennerly/pydiner/
-
 
 ## abstract
 
-`kingofsnake` is a template for a [reproducible] data analysis lab which:
+`kingofsnake` is a [template] for a [reproducible] data analysis lab which:
 
-- runs [Jupyter] notebooks in a [Docker container].
+- serves [Jupyter notebooks] from a [Docker container].
 - never conflicts with existing Python(s), [Anaconda], or [virtualenvs].
-- includes [pinned versions] of these [pip] packages and their dependencies:
+- includes [pinned] versions of these packages and their dependencies:
 
 ```sh
 networkx
@@ -30,23 +30,28 @@ scikit-learn
 scipy
 seaborn
 ```
+[template]: https://help.github.com/en/articles/creating-a-repository-from-a-template
 [reproducible]: https://en.wikipedia.org/wiki/Replication_crisis
-[Jupyter]: https://jupyter.org/
+[Jupyter notebooks]: https://jupyter-notebook.readthedocs.io/en/stable/
 [Docker container]: https://docs.docker.com/develop/
 [Anaconda]: https://www.anaconda.com/
 [virtualenvs]: https://virtualenv.pypa.io/en/latest/
-[pinned versions]: https://pip.pypa.io/en/stable/user_guide/#pinned-version-numbers
-[pip]: https://pip.pypa.io/en/stable/
+[pinned]: https://pip.pypa.io/en/stable/user_guide/#pinned-version-numbers
 
-See the [books] folder for examples of [data cleaning], supervised [classification], unsupervised [clustering], force-directed [graph drawing], and [principal component analysis].
+See the [books] folder for examples of:
 
-[books]: books
+- [data cleaning]
+- unsupervised [clustering]
+- supervised [classification]
+- [principal component analysis]
+- force-directed [graph drawing]
+
+[books]: #books
 [data cleaning]: https://en.wikipedia.org/wiki/Data_cleansing
-[classification]: https://en.wikipedia.org/wiki/Statistical_classification
 [clustering]: https://en.wikipedia.org/wiki/Hierarchical_clustering
-[graph drawing]: https://en.wikipedia.org/wiki/Force-directed_graph_drawing
+[classification]: https://en.wikipedia.org/wiki/Statistical_classification
 [principal component analysis]: https://en.wikipedia.org/wiki/Principal_component_analysis
-
+[graph drawing]: https://en.wikipedia.org/wiki/Force-directed_graph_drawing
 
 ## basics
 
@@ -112,11 +117,11 @@ The `clean` command is rarely necessary because `kingofsnake` containers [self-d
 
 The `books` folder contains example notebooks:
 
-- [classify.ipynb] uses [sklearn.linear_model] to train and test a classifier.
-- [clean.ipynb] uses [pandas] to standardize, sort, and filter a dataset.
-- [cluster.ipynb] uses [scipy.cluster.hierarchy] to find clusters in a dataset.
-- [components.ipynb] uses [sklearn.decomposition.PCA] to reduce the dimension of a dataset.
-- [graph.ipynb] uses a custom implementation of [ForceAtlas2] to draw graphs.
+- [classify.ipynb] trains and tests an [sklearn.linear_model] classifier.
+- [clean.ipynb] standardizes, sorts, and filters [pandas] DataFrames.
+- [cluster.ipynb] finds clusters with [scipy.cluster.hierarchy].
+- [components.ipynb] finds principal components with [sklearn.decomposition.PCA].
+- [graph.ipynb] draws graphs using the [ForceAtlas2] energy model.
 - [plot.ipynb] uses [matplotlib] to visualize data.
 
 [classify.ipynb]: books/classify.ipynb
