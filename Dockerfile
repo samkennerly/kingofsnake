@@ -1,13 +1,16 @@
-FROM python:3.11.6
+FROM python:3.12.10
 LABEL description="Python science laboratory"
 LABEL maintainer="samkennerly@gmail.com"
 
 # Install system packages
 RUN apt-get -y update && apt-get -y install cmake gcc less tree
 
-# Install Python packages
+# Install core Python packages
+RUN pip3 install notebook pandas scipy
+
+# Install extra Python packages
 COPY requirements.txt /tmp
-RUN pip install --upgrade pip && pip install --requirement /tmp/requirements.txt
+RUN pip3 install --requirement /tmp/requirements.txt
 
 # Create user and context folder
 RUN useradd --create-home kos
